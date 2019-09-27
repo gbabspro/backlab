@@ -1,7 +1,6 @@
 package com.jokkoapps.jokkoapps.model;
 
 import com.jokkoapps.jokkoapps.model.audit.DateAudit;
-import org.hibernate.annotations.NaturalId;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -15,6 +14,7 @@ import java.util.Set;
             "email"
         })
 })
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User extends DateAudit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,11 +27,12 @@ public class User extends DateAudit {
     @Size(max = 40)
     private String lastname;
 
-    @NotBlank
+    @Column(name = "enabled")
+    private boolean enabled;
+    
     @Size(max = 80)
     private String phone;
     
-    @NaturalId
     @NotBlank
     @Size(max = 40)
     @Email
@@ -57,10 +58,29 @@ public class User extends DateAudit {
         this.phone = phone;
         this.email = email;
         this.password = password;
+        this.enabled=false;
     }
+    
+    public User(String firstname, String lastname, String email, String password) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
+        this.enabled=false;
+    }
+    
+    
 
 
-    public Long getId() {
+    public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Long getId() {
 		return id;
 	}
 

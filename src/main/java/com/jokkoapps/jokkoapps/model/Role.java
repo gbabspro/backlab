@@ -1,6 +1,8 @@
 package com.jokkoapps.jokkoapps.model;
 
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.Subselect;
+
 import javax.persistence.*;
 
 @Entity
