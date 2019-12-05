@@ -1,5 +1,9 @@
 package com.jokkoapps.jokkoapps.payload;
 
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+
 public class UserSummary {
 	
     private Long id;
@@ -7,6 +11,7 @@ public class UserSummary {
     private String lastname;
     private String email;
     private String phone;
+    private Collection<? extends GrantedAuthority> authorities;
 
     public UserSummary(Long id, String firstname, String lastname, String email) {
         this.id = id;
@@ -16,16 +21,24 @@ public class UserSummary {
        
     }
 
-    public UserSummary(Long id, String firstname, String lastname, String email, String phone) {
+    public UserSummary(Long id, String firstname, String lastname, String email, String phone, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
         this.phone = phone;
+        this.authorities = authorities;
     }
-
     
-    public String getPhone() {
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+		return authorities;
+	}
+
+	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
+		this.authorities = authorities;
+	}
+
+	public String getPhone() {
 		return phone;
 	}
 

@@ -1,5 +1,7 @@
 package com.jokkoapps.jokkoapps.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,7 +15,7 @@ import org.hibernate.annotations.NaturalId;
 
 @Entity
 @Table(name = "offres")
-public class Offre {
+public class Offre implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,4 +28,37 @@ public class Offre {
     private int nombreMaxAgent;
     
     private float price;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public OffreName getName() {
+		return name;
+	}
+
+	public void setName(OffreName name) {
+		this.name = name;
+	}
+
+	public int getNombreMaxAgent() {
+		return nombreMaxAgent;
+	}
+
+	public void setNombreMaxAgent(int nombreMaxAgent) {
+		this.nombreMaxAgent = nombreMaxAgent;
+	}
+
+	public float getPrice() {
+		return price;
+	}
+
+	public void setPrice(float price) {
+		this.price = price;
+	}
+    
 }

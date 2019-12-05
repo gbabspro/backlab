@@ -1,5 +1,6 @@
 package com.jokkoapps.jokkoapps.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jokkoapps.jokkoapps.model.audit.DateAudit;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -38,6 +39,7 @@ public class User extends DateAudit {
     @Email
     private String email;
 
+    @JsonIgnore
     @NotBlank
     @Size(max = 100)
     private String password;

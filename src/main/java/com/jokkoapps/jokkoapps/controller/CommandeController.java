@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jokkoapps.jokkoapps.model.BouttonAppelConf;
 import com.jokkoapps.jokkoapps.model.Commande;
 import com.jokkoapps.jokkoapps.model.Offre;
 import com.jokkoapps.jokkoapps.model.OffreName;
@@ -27,6 +28,7 @@ import com.jokkoapps.jokkoapps.model.User;
 import com.jokkoapps.jokkoapps.payload.ApiResponse;
 import com.jokkoapps.jokkoapps.payload.CommandeServiceRequest;
 import com.jokkoapps.jokkoapps.payload.UserSummary;
+import com.jokkoapps.jokkoapps.repository.BtnRepository;
 import com.jokkoapps.jokkoapps.repository.CommandeRepository;
 import com.jokkoapps.jokkoapps.repository.OffreRepository;
 import com.jokkoapps.jokkoapps.repository.ServiceRepository;
@@ -44,6 +46,9 @@ public class CommandeController {
 
     @Autowired
     UserService userService;
+    
+    @Autowired
+    BtnRepository btnRepository;
     
     @Autowired
     ServiceRepository serviceRepository;
@@ -97,15 +102,24 @@ public class CommandeController {
 		
 		Commande commande = new Commande();
 		
-		commande.setOffre(offre);
+		service.setOffre(offre);
+		
 		commande.setUser(user);
 		commande.setService(service);
 		commande.setStatus(StatusName.STATUS_DONE);
 		
-		serviceRepository.save(service);
+		BouttonAppelConf btn = new BouttonAppelConf();
+		btn.setBackground("14631C");
+		btn.setColor("fff");
+		btn.setContent("Contacter nous");
+		
+		btn.setService(service);
+		
+		Service serviceResponse = serviceRepository.save(service);
+		btnRepository.save(btn);
 		commandeRepository.save(commande);
 		
-        return ResponseEntity.accepted().body(new ApiResponse(true, "Votre commande a bien été enregistré !"));
+        return ResponseEntity.accepted().body(serviceResponse);
     }
     
     @GetMapping("/service/list")
@@ -115,5 +129,14 @@ public class CommandeController {
         List<Service> services = serviceRepository.findByUserId(currentUser.getId());
         
         return services;
+    }
+    
+    @GetMapping("/commandes/list")
+    @PreAuthorize("hasRole('MANAGER')")
+    public List<Commande> getCommandeList(@CurrentUser UserPrincipal currentUser) {
+        
+        List<Commande> commandes = commandeRepository.findByUserId(currentUser.getId());
+        
+        return commandes;
     }
 }

@@ -47,6 +47,10 @@ public class Service extends DateAudit {
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
+    
+    @ManyToOne(fetch=FetchType.EAGER, optional = false)
+    @JoinColumn(name = "offre_id", nullable = false)
+    private Offre offre;
 
     @Column(name = "enabled")
     private boolean enabled;
@@ -62,6 +66,16 @@ public class Service extends DateAudit {
 	public Service() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+	
+	
+
+	public Offre getOffre() {
+		return offre;
+	}
+
+	public void setOffre(Offre offre) {
+		this.offre = offre;
 	}
 
 	public Long getId() {

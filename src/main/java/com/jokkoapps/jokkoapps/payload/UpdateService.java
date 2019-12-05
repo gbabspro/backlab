@@ -5,7 +5,7 @@ import javax.validation.constraints.Size;
 
 public class UpdateService {
     @NotBlank
-    @Size(min = 3, max = 15)
+    @Size(min = 3, max = 45)
     private String serviceName;
     
     @NotBlank

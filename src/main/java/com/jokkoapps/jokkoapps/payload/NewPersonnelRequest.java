@@ -1,9 +1,10 @@
 package com.jokkoapps.jokkoapps.payload;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
-public class SignUpRequest {
-	
+public class NewPersonnelRequest {
     @NotBlank
     @Size(min = 4, max = 40)
     private String firstname;
@@ -13,14 +14,13 @@ public class SignUpRequest {
     private String lastname;
 
     @NotBlank
-    @Size(max = 80)
+    @Size(max = 40)
     @Email
     private String email;
-
+    
     @NotBlank
-    @Size(min = 6, max = 20)
-    private String password;
-
+    @Size(max = 40)
+    private String role;
 
     public String getFirstname() {
 		return firstname;
@@ -46,11 +46,14 @@ public class SignUpRequest {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
+	public String getRole() {
+		return role;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public void setRole(String role) {
+		this.role = role;
+	}
+    
+    
+
 }

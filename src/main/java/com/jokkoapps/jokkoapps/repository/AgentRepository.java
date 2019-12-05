@@ -6,11 +6,13 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.jokkoapps.jokkoapps.model.Agent;
+import com.jokkoapps.jokkoapps.model.Personnel;
 
 @Repository
-public interface AgentRepository extends JpaRepository<Agent, Long>{
+public interface AgentRepository extends JpaRepository<Personnel, Long>{
 
-	Optional<Agent> findById(Long id);
-	List<Agent> findByServiceId(Long serviceId);
+	Optional<Personnel> findById(Long id);
+	List<Personnel> findByServiceId(Long serviceId);
+	Optional<Personnel> findByEmail(String email);
+	Boolean existsByEmail(String email);
 }

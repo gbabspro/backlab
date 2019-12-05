@@ -62,7 +62,7 @@ public class RegistrationListener implements
         service.createVerificationToken(user, token);
         
         
-        String confirmationUrl = "http://localhost:5000/api/auth/regitrationConfirm?token=" + token;
+        String confirmationUrl = "http://localhost:3000/pages/confirm-registration/" + token;
         String name = user.getFirstname()+" "+user.getLastname();
     	
         ctx.setVariable("name", name);

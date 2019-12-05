@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jokkoapps.jokkoapps.model.Agent;
+import com.jokkoapps.jokkoapps.model.BouttonAppelConf;
+import com.jokkoapps.jokkoapps.model.Personnel;
 import com.jokkoapps.jokkoapps.model.Service;
 import com.jokkoapps.jokkoapps.payload.ApiResponse;
 import com.jokkoapps.jokkoapps.payload.UpdateService;
 import com.jokkoapps.jokkoapps.payload.UserSummary;
 import com.jokkoapps.jokkoapps.repository.AgentRepository;
+import com.jokkoapps.jokkoapps.repository.BtnRepository;
 import com.jokkoapps.jokkoapps.repository.ServiceRepository;
 import com.jokkoapps.jokkoapps.security.CurrentUser;
 import com.jokkoapps.jokkoapps.security.UserPrincipal;
@@ -37,6 +39,9 @@ public class ServiceController {
     
 	@Autowired
 	private AgentRepository agentRepository;
+	
+	@Autowired
+	BtnRepository btnRepository;
     
     @PutMapping("/service/{serviceId}")
     @PreAuthorize("hasRole('MANAGER')")
@@ -59,6 +64,23 @@ public class ServiceController {
     	return ResponseEntity.accepted().body(new ApiResponse(true, "Le service a bien été mis à jour !"));
     }
     
+    @GetMapping("/service/{serviceId}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<?> getService(@PathVariable Long serviceId) {
+    	
+    	Optional<Service> serviceOptional = serviceRepository.findById(serviceId);
+    	
+    	if(serviceOptional.isPresent() != true) {
+    		return new ResponseEntity(new ApiResponse(false, "Le service est introuvable !"),
+                    HttpStatus.NOT_FOUND);
+    	}
+    	
+    	Service service = serviceOptional.get();
+    	
+    	return ResponseEntity.status(HttpStatus.OK)
+    	        .body(service);
+    }
+    
     @GetMapping("/service/list/agent/{serviceId}")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity getListAgent(@PathVariable Long serviceId) {
@@ -70,10 +92,10 @@ public class ServiceController {
                     HttpStatus.NOT_FOUND);
     	}
     	
-    	List<Agent> agents = agentRepository.findByServiceId(serviceId);
+    	List<Personnel> personnels = agentRepository.findByServiceId(serviceId);
     		
     	return ResponseEntity.status(HttpStatus.OK)
-    	        .body(agents);
+    	        .body(personnels);
     }
     
     
@@ -126,4 +148,23 @@ public class ServiceController {
     	
     	return ResponseEntity.accepted().body(new ApiResponse(true, "Le service a bien été mis à jour !"));
     }
+    
+    @GetMapping("/service/btnconf/{serviceId}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity getBtnConf(@PathVariable Long serviceId) {
+    	
+    	Optional<Service> serviceOptional = serviceRepository.findById(serviceId);
+    	
+    	if(serviceOptional.isPresent() != true) {
+    		return new ResponseEntity(new ApiResponse(false, "Le service est introuvable !"),
+                    HttpStatus.NOT_FOUND);
+    	}
+    	
+    	 BouttonAppelConf btnConf = btnRepository.findByServiceId(serviceId);
+    		
+    	return ResponseEntity.status(HttpStatus.OK)
+    	        .body(btnConf);
+    }
+    
+    
 }

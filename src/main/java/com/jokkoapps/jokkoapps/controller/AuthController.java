@@ -91,6 +91,16 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
+    	Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
+    	System.out.println("after after after");
+    	if(userOptional.isPresent()) {
+    		
+    		User user = userOptional.get();
+    		if(user.getPassword().equalsIgnoreCase("new")) {
+    			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(user);
+    		}
+    	}
+    	
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),

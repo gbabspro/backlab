@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jokkoapps.jokkoapps.model.audit.DateAudit;
 
 @Entity
@@ -22,17 +23,14 @@ public class Commande extends DateAudit{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "service_id", nullable = false)
     private Service service;
-    
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "offre_id", nullable = false)
-    private Offre offre;
     
     @Enumerated(EnumType.STRING)
     @Column(length = 60)
@@ -60,14 +58,6 @@ public class Commande extends DateAudit{
 
 	public void setService(Service service) {
 		this.service = service;
-	}
-
-	public Offre getOffre() {
-		return offre;
-	}
-
-	public void setOffre(Offre offre) {
-		this.offre = offre;
 	}
 
 	public StatusName getStatus() {
