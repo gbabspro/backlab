@@ -18,9 +18,6 @@ public class NewPersonnelRequest {
     @Email
     private String email;
     
-    @NotBlank
-    @Size(max = 40)
-    private String role;
 
     public String getFirstname() {
 		return firstname;
@@ -45,15 +42,6 @@ public class NewPersonnelRequest {
     public void setEmail(String email) {
         this.email = email;
     }
-
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
-	}
     
-    
-
+   
 }

@@ -80,29 +80,14 @@ public class CommandeController {
 			service.setTypeService(ServiceType.SERVICE_CALL);	
 		}
 		
-		service.setOrganisation(commandeRequest.getOrganisation());
-		service.setServiceName(commandeRequest.getServiceName());
 		service.setUser(user);
-		service.setContactId(UUID.randomUUID()
+		service.setContactId("CONTACTCENTER_"+UUID.randomUUID()
             .toString());
+		service.setDomaine_name(commandeRequest.getDomaine_name());
 		service.setEnabled(true);
 		
-		Offre offre = new Offre();
-		
-		if(commandeRequest.getOffreName().equalsIgnoreCase("OFFRE_START")) {
-			offre = offreRepository.findByName(OffreName.OFFRE_START);
-		}else if(commandeRequest.getOffreName().equalsIgnoreCase("OFFRE_PREMIUM")) {
-			offre = offreRepository.findByName(OffreName.OFFRE_PREMIUM);
-		}else if(commandeRequest.getOffreName().equalsIgnoreCase("OFFRE_BUSINESS")) {
-			offre = offreRepository.findByName(OffreName.OFFRE_BUSINESS);
-		}else {
-            return new ResponseEntity(new ApiResponse(false, "Merci de sélectionner une offre valide !"),
-                    HttpStatus.BAD_REQUEST);
-		}
 		
 		Commande commande = new Commande();
-		
-		service.setOffre(offre);
 		
 		commande.setUser(user);
 		commande.setService(service);

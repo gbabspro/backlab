@@ -28,29 +28,23 @@ public class Service extends DateAudit {
     private Long id;
     
     @NotBlank
-    @Size(max = 40)
-    private String serviceName;
-    
-    @NotBlank
-    @Size(max = 40)
+    @Size(max = 100)
     @Column(unique = true)
     private String contactId;
     
+    @NotBlank
+    @Size(max = 160)
+    @Column(unique = true)
+    private String domaine_name;
+    
     @Column(unique = false)
     private ServiceType typeService;
-    
-    @Size(max = 40)
-    private String organisation;
     
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
-    
-    @ManyToOne(fetch=FetchType.EAGER, optional = false)
-    @JoinColumn(name = "offre_id", nullable = false)
-    private Offre offre;
 
     @Column(name = "enabled")
     private boolean enabled;
@@ -68,30 +62,12 @@ public class Service extends DateAudit {
 		// TODO Auto-generated constructor stub
 	}
 	
-	
-
-	public Offre getOffre() {
-		return offre;
-	}
-
-	public void setOffre(Offre offre) {
-		this.offre = offre;
-	}
-
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getServiceName() {
-		return serviceName;
-	}
-
-	public void setServiceName(String serviceName) {
-		this.serviceName = serviceName;
 	}
 
 	public String getContactId() {
@@ -102,13 +78,6 @@ public class Service extends DateAudit {
 		this.contactId = contactId;
 	}
 
-	public String getOrganisation() {
-		return organisation;
-	}
-
-	public void setOrganisation(String organisation) {
-		this.organisation = organisation;
-	}
 
 	public User getUser() {
 		return user;
@@ -125,6 +94,15 @@ public class Service extends DateAudit {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
+
+	public String getDomaine_name() {
+		return domaine_name;
+	}
+
+	public void setDomaine_name(String domaine_name) {
+		this.domaine_name = domaine_name;
+	}
     
+	
     
 }

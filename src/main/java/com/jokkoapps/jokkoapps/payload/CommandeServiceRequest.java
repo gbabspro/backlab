@@ -10,17 +10,8 @@ public class CommandeServiceRequest {
     private String serviceType;
     
     @NotBlank
-    @Size(min = 3, max = 15)
-    private String serviceName;
+    private String domaine_name;
     
-    @NotBlank
-    @Size(max = 100)
-    private String organisation;
-    
-    @NotBlank
-    @Size(min = 3, max = 15)
-    private String offreName;
-
 	public String getServiceType() {
 		return serviceType;
 	}
@@ -29,30 +20,12 @@ public class CommandeServiceRequest {
 		this.serviceType = serviceType;
 	}
 
-	public String getServiceName() {
-		return serviceName;
+	public String getDomaine_name() {
+		return domaine_name;
 	}
 
-	public void setServiceName(String serviceName) {
-		this.serviceName = serviceName;
-	}
-
-	public String getOrganisation() {
-		return organisation;
-	}
-
-	public void setOrganisation(String organisation) {
-		this.organisation = organisation;
-	}
-
-	public String getOffreName() {
-		return offreName;
-	}
-
-	public void setOffreName(String offreName) {
-		this.offreName = offreName;
+	public void setDomaine_name(String domaine_name) {
+		this.domaine_name = domaine_name;
 	}
     
-    
-
 }

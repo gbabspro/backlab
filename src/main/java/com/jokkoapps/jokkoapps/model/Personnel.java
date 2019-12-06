@@ -21,11 +21,27 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @PrimaryKeyJoinColumn(name = "id")
 public class Personnel extends User{
     
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "service_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Service service;
+    
+    
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User user;
+    
+    @NotBlank
+    @Size(max = 100)
+    private String extension;
+    
+    
+    @NotBlank
+    @Size(max = 200)
+    private String sip_password;
 
 	public Personnel() {
 		super();
@@ -38,6 +54,30 @@ public class Personnel extends User{
 
 	public void setService(Service service) {
 		this.service = service;
+	}
+
+	public String getExtension() {
+		return extension;
+	}
+
+	public void setExtension(String extension) {
+		this.extension = extension;
+	}
+
+	public String getSip_password() {
+		return sip_password;
+	}
+
+	public void setSip_password(String sip_password) {
+		this.sip_password = sip_password;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
     
     
