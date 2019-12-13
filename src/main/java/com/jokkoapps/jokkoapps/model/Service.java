@@ -1,5 +1,6 @@
 package com.jokkoapps.jokkoapps.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -45,8 +47,18 @@ public class Service extends DateAudit {
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
+    
+    @NotBlank
+    @Size(max = 160)
+    @Column(unique = true)
+    private String defaultSipUser;
+    
+    @NotBlank
+    @Size(max = 160)
+    @Column(unique = true)
+    private String defaultSipPassword;
 
-    @Column(name = "enabled")
+	@Column(name = "enabled")
     private boolean enabled;
 
 	public ServiceType getTypeService() {
@@ -102,7 +114,22 @@ public class Service extends DateAudit {
 	public void setDomaine_name(String domaine_name) {
 		this.domaine_name = domaine_name;
 	}
-    
+
+	public String getDefaultSipUser() {
+		return defaultSipUser;
+	}
+
+	public void setDefaultSipUser(String defaultSipUser) {
+		this.defaultSipUser = defaultSipUser;
+	}
+
+	public String getDefaultSipPassword() {
+		return defaultSipPassword;
+	}
+
+	public void setDefaultSipPassword(String defaultSipPassword) {
+		this.defaultSipPassword = defaultSipPassword;
+	}	
 	
-    
+	
 }

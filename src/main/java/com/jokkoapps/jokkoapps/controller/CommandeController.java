@@ -21,6 +21,7 @@ import com.jokkoapps.jokkoapps.model.BouttonAppelConf;
 import com.jokkoapps.jokkoapps.model.Commande;
 import com.jokkoapps.jokkoapps.model.Offre;
 import com.jokkoapps.jokkoapps.model.OffreName;
+import com.jokkoapps.jokkoapps.model.Personnel;
 import com.jokkoapps.jokkoapps.model.Service;
 import com.jokkoapps.jokkoapps.model.ServiceType;
 import com.jokkoapps.jokkoapps.model.StatusName;
@@ -28,6 +29,7 @@ import com.jokkoapps.jokkoapps.model.User;
 import com.jokkoapps.jokkoapps.payload.ApiResponse;
 import com.jokkoapps.jokkoapps.payload.CommandeServiceRequest;
 import com.jokkoapps.jokkoapps.payload.UserSummary;
+import com.jokkoapps.jokkoapps.repository.AgentRepository;
 import com.jokkoapps.jokkoapps.repository.BtnRepository;
 import com.jokkoapps.jokkoapps.repository.CommandeRepository;
 import com.jokkoapps.jokkoapps.repository.OffreRepository;
@@ -59,6 +61,9 @@ public class CommandeController {
     @Autowired
     CommandeRepository commandeRepository;
     
+    @Autowired
+	private AgentRepository personnelRepository;
+    
     @PostMapping("/commande/new/service")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<?> commandeService(@Valid @RequestBody CommandeServiceRequest commandeRequest, @CurrentUser UserPrincipal currentUser) {
@@ -86,7 +91,6 @@ public class CommandeController {
 		service.setDomaine_name(commandeRequest.getDomaine_name());
 		service.setEnabled(true);
 		
-		
 		Commande commande = new Commande();
 		
 		commande.setUser(user);
@@ -100,7 +104,27 @@ public class CommandeController {
 		
 		btn.setService(service);
 		
+		
+		Personnel defaultPers = new Personnel();
+		
+		defaultPers.setFirstname(user.getFirstname());
+		defaultPers.setLastname(user.getLastname());
+		defaultPers.setEmail(UUID.randomUUID().toString()+"@defaultuser.com");
+		defaultPers.setPassword("default");
+		defaultPers.setExtension(UUID.randomUUID().toString());
+		defaultPers.setSip_password(UUID.randomUUID().toString());
+		defaultPers.setEnabled(true);
+		defaultPers.setUser(user);
+		
+		defaultPers.setUuidPers(UUID.randomUUID().toString());
+		
+		service.setDefaultSipUser(defaultPers.getExtension());
+		service.setDefaultSipPassword(defaultPers.getSip_password());
+		
 		Service serviceResponse = serviceRepository.save(service);
+		defaultPers.setService(serviceResponse);
+		defaultPers = personnelRepository.save(defaultPers);
+		
 		btnRepository.save(btn);
 		commandeRepository.save(commande);
 		

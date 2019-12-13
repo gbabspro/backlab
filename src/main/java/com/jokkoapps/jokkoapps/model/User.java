@@ -35,7 +35,7 @@ public class User extends DateAudit {
     private String phone;
     
     @NotBlank
-    @Size(max = 40)
+    @Size(max = 160)
     @Email
     private String email;
 

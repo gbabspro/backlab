@@ -91,6 +91,7 @@ public class PersonnelController {
     	Personnel personnel = new Personnel();
     	
     	Service service = serviceOptional.get();
+    	personnel.setUuidPers(UUID.randomUUID().toString());
     	personnel.setService(service);
     	personnel.setFirstname(newPersonnelRequest.getFirstname());
     	personnel.setLastname(newPersonnelRequest.getLastname());

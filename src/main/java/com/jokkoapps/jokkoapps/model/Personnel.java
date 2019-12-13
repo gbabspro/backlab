@@ -17,7 +17,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "agent")
+@Table(name = "personnel")
 @PrimaryKeyJoinColumn(name = "id")
 public class Personnel extends User{
     
@@ -27,6 +27,10 @@ public class Personnel extends User{
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Service service;
     
+    @NotBlank
+    @Size(max = 160)
+    @Column(unique = true)
+    private String uuidPers;
     
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -78,6 +82,14 @@ public class Personnel extends User{
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public String getUuidPers() {
+		return uuidPers;
+	}
+
+	public void setUuidPers(String uuidPers) {
+		this.uuidPers = uuidPers;
 	}
     
     
