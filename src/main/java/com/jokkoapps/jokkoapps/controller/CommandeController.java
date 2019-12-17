@@ -88,7 +88,7 @@ public class CommandeController {
 		service.setUser(user);
 		service.setContactId("CONTACTCENTER_"+UUID.randomUUID()
             .toString());
-		service.setDomaine_name(commandeRequest.getDomaine_name());
+		service.setDomaine(commandeRequest.getDomaine_name());
 		service.setEnabled(true);
 		
 		Commande commande = new Commande();

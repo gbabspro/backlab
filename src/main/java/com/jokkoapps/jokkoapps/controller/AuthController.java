@@ -2,8 +2,10 @@ package com.jokkoapps.jokkoapps.controller;
 
 import com.jokkoapps.jokkoapps.exception.AppException;
 import com.jokkoapps.jokkoapps.model.PasswordResetToken;
+import com.jokkoapps.jokkoapps.model.Personnel;
 import com.jokkoapps.jokkoapps.model.Role;
 import com.jokkoapps.jokkoapps.model.RoleName;
+import com.jokkoapps.jokkoapps.model.Service;
 import com.jokkoapps.jokkoapps.model.User;
 import com.jokkoapps.jokkoapps.model.VerificationToken;
 import com.jokkoapps.jokkoapps.payload.ApiResponse;
@@ -13,8 +15,10 @@ import com.jokkoapps.jokkoapps.payload.LoginRequest;
 import com.jokkoapps.jokkoapps.payload.OnRegistrationCompleteEvent;
 import com.jokkoapps.jokkoapps.payload.ResetPasswordRequest;
 import com.jokkoapps.jokkoapps.payload.SignUpRequest;
+import com.jokkoapps.jokkoapps.repository.AgentRepository;
 import com.jokkoapps.jokkoapps.repository.PasswordResetTokenRepository;
 import com.jokkoapps.jokkoapps.repository.RoleRepository;
+import com.jokkoapps.jokkoapps.repository.ServiceRepository;
 import com.jokkoapps.jokkoapps.repository.UserRepository;
 import com.jokkoapps.jokkoapps.repository.VerificationTokenRepository;
 import com.jokkoapps.jokkoapps.security.CurrentUser;
@@ -69,6 +73,9 @@ public class AuthController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    ServiceRepository serviceRepository;
 
     @Autowired
     JwtTokenProvider tokenProvider;
@@ -81,6 +88,9 @@ public class AuthController {
     
     @Autowired
     JokkoMailSender jokkoMailSender;
+    
+    @Autowired
+	private AgentRepository personnelRepository;
     
     @Autowired
     private PasswordResetTokenRepository passwordTokenRepository;
@@ -111,6 +121,14 @@ public class AuthController {
             return new ResponseEntity(new ApiResponse(false, "Email Address already in use!"),
                     HttpStatus.BAD_REQUEST);
         }
+        
+        
+        if(serviceRepository.existsByDomaine(signUpRequest.getDomaine())) {
+            return new ResponseEntity(new ApiResponse(false, "Le nom de domaine existe déjà !"),
+                    HttpStatus.BAD_REQUEST);
+        }
+        
+        
 
         // Creating user's account
         User user = new User(signUpRequest.getFirstname(), signUpRequest.getLastname(),
@@ -119,6 +137,36 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         User result = userRepository.save(user);
+        
+        Service service = new Service();  
+        
+		service.setUser(user);
+		service.setContactId("CONTACTCENTER_"+UUID.randomUUID()
+            .toString());
+		service.setDomaine(signUpRequest.getDomaine());
+		service.setEnabled(true);
+		
+		Personnel defaultPers = new Personnel();
+		
+		defaultPers.setFirstname(user.getFirstname());
+		defaultPers.setLastname(user.getLastname());
+		defaultPers.setEmail(UUID.randomUUID().toString()+"@defaultuser.com");
+		defaultPers.setPassword("default");
+		defaultPers.setExtension(UUID.randomUUID().toString());
+		defaultPers.setSip_password(UUID.randomUUID().toString());
+		defaultPers.setEnabled(true);
+		defaultPers.setUser(user);
+		
+		defaultPers.setUuidPers(UUID.randomUUID().toString());
+		
+		service.setDefaultSipUser(defaultPers.getExtension());
+		service.setDefaultSipPassword(defaultPers.getSip_password());
+
+		Service serviceResponse = serviceRepository.save(service);
+		
+		defaultPers.setService(serviceResponse);
+		
+		personnelRepository.save(defaultPers);
         
         try {
         String appUrl = request.getContextPath();

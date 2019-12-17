@@ -20,6 +20,14 @@ public class SignUpRequest {
     @NotBlank
     @Size(min = 6, max = 20)
     private String password;
+    
+    @NotBlank
+    @Size(min = 6, max = 160)
+    private String domaine;
+    
+    @NotBlank
+    @Size(min = 6, max = 20)
+    private String serviceType;
 
 
     public String getFirstname() {
@@ -53,4 +61,22 @@ public class SignUpRequest {
     public void setPassword(String password) {
         this.password = password;
     }
+
+	public String getDomaine() {
+		return domaine;
+	}
+
+	public void setDomaine(String domaine) {
+		this.domaine = domaine;
+	}
+
+	public String getServiceType() {
+		return serviceType;
+	}
+
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
+	}
+    
+    
 }

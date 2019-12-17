@@ -35,9 +35,9 @@ public class Service extends DateAudit {
     private String contactId;
     
     @NotBlank
-    @Size(max = 160)
+    @Size(max = 163)
     @Column(unique = true)
-    private String domaine_name;
+    private String domaine;
     
     @Column(unique = false)
     private ServiceType typeService;
@@ -107,12 +107,14 @@ public class Service extends DateAudit {
 		this.enabled = enabled;
 	}
 
-	public String getDomaine_name() {
-		return domaine_name;
+	
+
+	public String getDomaine() {
+		return domaine;
 	}
 
-	public void setDomaine_name(String domaine_name) {
-		this.domaine_name = domaine_name;
+	public void setDomaine(String domaine) {
+		this.domaine = domaine;
 	}
 
 	public String getDefaultSipUser() {

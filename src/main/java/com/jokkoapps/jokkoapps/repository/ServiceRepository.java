@@ -10,10 +10,12 @@ import org.springframework.stereotype.Repository;
 
 import com.jokkoapps.jokkoapps.model.Service;
 import com.jokkoapps.jokkoapps.model.ServiceType;
+import com.jokkoapps.jokkoapps.model.User;
 
 @Repository
 public interface ServiceRepository extends JpaRepository<Service, Long>{
 	
     List<Service> findByUserId(Long userId);
     Service findByTypeService(ServiceType serviceName); 
+    boolean existsByDomaine(String domaine);
 }
