@@ -1,5 +1,8 @@
 package com.jokkoapps.jokkoapps.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -17,6 +21,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jokkoapps.jokkoapps.model.audit.DateAudit;
@@ -39,6 +44,10 @@ public class Service extends DateAudit {
     @Column(unique = true)
     private String domaine;
     
+    @JsonIgnore
+    @OneToMany(mappedBy="service",fetch = FetchType.LAZY)    
+    private List<Personnel> personnels;
+    
     @Column(unique = false)
     private ServiceType typeService;
     
@@ -48,15 +57,9 @@ public class Service extends DateAudit {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
     
-    @NotBlank
-    @Size(max = 160)
-    @Column(unique = true)
-    private String defaultSipUser;
-    
-    @NotBlank
-    @Size(max = 160)
-    @Column(unique = true)
-    private String defaultSipPassword;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "extension_id", referencedColumnName = "id")
+    private Extension defaultextension;
 
 	@Column(name = "enabled")
     private boolean enabled;
@@ -107,8 +110,6 @@ public class Service extends DateAudit {
 		this.enabled = enabled;
 	}
 
-	
-
 	public String getDomaine() {
 		return domaine;
 	}
@@ -117,21 +118,22 @@ public class Service extends DateAudit {
 		this.domaine = domaine;
 	}
 
-	public String getDefaultSipUser() {
-		return defaultSipUser;
+	public Extension getDefaultextension() {
+		return defaultextension;
 	}
 
-	public void setDefaultSipUser(String defaultSipUser) {
-		this.defaultSipUser = defaultSipUser;
+	public void setDefaultextension(Extension defaultextension) {
+		this.defaultextension = defaultextension;
 	}
 
-	public String getDefaultSipPassword() {
-		return defaultSipPassword;
+	public List<Personnel> getPersonnels() {
+		return personnels;
 	}
 
-	public void setDefaultSipPassword(String defaultSipPassword) {
-		this.defaultSipPassword = defaultSipPassword;
-	}	
+	public void setPersonnels(List<Personnel> personnels) {
+		this.personnels = personnels;
+	}
+	
 	
 	
 }

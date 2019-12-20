@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jokkoapps.jokkoapps.exception.AppException;
+import com.jokkoapps.jokkoapps.model.Extension;
 import com.jokkoapps.jokkoapps.model.Personnel;
 import com.jokkoapps.jokkoapps.model.Role;
 import com.jokkoapps.jokkoapps.model.RoleName;
@@ -61,6 +63,9 @@ public class PersonnelController {
     
     @Autowired
     JokkoMailSender jokkoMailSender;
+    
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @PostMapping("/personnel/{serviceId}/new")
     @PreAuthorize("hasRole('MANAGER')")
@@ -102,14 +107,19 @@ public class PersonnelController {
 		
     	personnel.setUser(user);
     	
-    	personnel.setExtension(UUID.randomUUID().toString());
-    	personnel.setSip_password(UUID.randomUUID().toString());
+    	Extension extension = new Extension();
+    	
+    	extension.setExtension(UUID.randomUUID().toString());
+    	extension.setSipPassword(UUID.randomUUID().toString());
+    	
+    	personnel.setExtension(extension);
+    	
     	int length = 10;
         boolean useLetters = true;
         boolean useNumbers = false;
         String generatedString = RandomStringUtils.random(length, useLetters, useNumbers);
         
-    	personnel.setPassword(generatedString);
+    	personnel.setPassword(passwordEncoder.encode(generatedString));
     	
         Role userRole = roleRepository.findByName(RoleName.ROLE_AGENT)
         .orElseThrow(() -> new AppException("User Role not set."));
@@ -122,6 +132,7 @@ public class PersonnelController {
     	personnel.setEnabled(true);
     	Personnel agentSave = personnelRepository.save(personnel);
     	
+    	personnel.setPassword(generatedString);
     	jokkoMailSender.sendMailNewAgent(personnel);
     	
     	return ResponseEntity.accepted().body(agentSave);
@@ -141,6 +152,8 @@ public class PersonnelController {
     	return ResponseEntity.status(HttpStatus.OK)
     	        .body(listOperateurs);
     }
+    
+
     
     
     @PostMapping("/personnel/updateProfil/{persId}")
@@ -226,5 +239,40 @@ public class PersonnelController {
     	personnelRepository.delete(personnel);
     	
     	return ResponseEntity.accepted().body(new ApiResponse(true, "Compte utilisateur supprimé !"));
+    }
+    
+    
+    @DeleteMapping("/personnel/service/")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<?> getPersonnel(@PathVariable Long persId) {
+    	
+    	Optional<Personnel> persOptional = personnelRepository.findById(persId);
+    	
+    	if(persOptional.isPresent() != true) {
+    		return new ResponseEntity(new ApiResponse(false, "Utilisateur introuvable !"),
+                    HttpStatus.NOT_FOUND);
+    	}
+    	
+    	Personnel personnel = persOptional.get();
+    	
+    	personnelRepository.delete(personnel);
+    	
+    	return ResponseEntity.accepted().body(new ApiResponse(true, "Compte utilisateur supprimé !"));
+    }
+    
+    
+    @GetMapping("/operator/me")
+    @PreAuthorize("hasRole('AGENT')")
+    public ResponseEntity<?> getServiceByOperatorId(@CurrentUser UserPrincipal currentUser) {
+    	
+    	Optional<Personnel> persOptional = personnelRepository.findById(currentUser.getId());
+    	
+    	if(persOptional.isPresent() != true) {
+    		return new ResponseEntity(new ApiResponse(false, "Utilisateur introuvable !"),
+                    HttpStatus.NOT_FOUND);
+    	}
+    	
+    	Personnel personnel = persOptional.get();
+    	return ResponseEntity.accepted().body(personnel);
     }
 }

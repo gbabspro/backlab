@@ -14,6 +14,7 @@ public interface AgentRepository extends JpaRepository<Personnel, Long>{
 	Optional<Personnel> findById(Long id);
 	List<Personnel> findByServiceId(Long serviceId);
 	List<Personnel> findByUserId(Long userId);
+
 	Optional<Personnel> findByEmail(String email);
 	Boolean existsByEmail(String email);
 }

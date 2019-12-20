@@ -1,10 +1,12 @@
 package com.jokkoapps.jokkoapps.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
@@ -15,6 +17,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "personnel")
@@ -22,9 +25,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Personnel extends User{
     
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "service_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Service service;
     
     @NotBlank
@@ -38,15 +40,10 @@ public class Personnel extends User{
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
     
-    @NotBlank
-    @Size(max = 100)
-    private String extension;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "extension_id", referencedColumnName = "id")
+    private Extension extension;
     
-    
-    @NotBlank
-    @Size(max = 200)
-    private String sip_password;
-
 	public Personnel() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -58,22 +55,6 @@ public class Personnel extends User{
 
 	public void setService(Service service) {
 		this.service = service;
-	}
-
-	public String getExtension() {
-		return extension;
-	}
-
-	public void setExtension(String extension) {
-		this.extension = extension;
-	}
-
-	public String getSip_password() {
-		return sip_password;
-	}
-
-	public void setSip_password(String sip_password) {
-		this.sip_password = sip_password;
 	}
 
 	public User getUser() {
@@ -91,6 +72,15 @@ public class Personnel extends User{
 	public void setUuidPers(String uuidPers) {
 		this.uuidPers = uuidPers;
 	}
+
+	public Extension getExtension() {
+		return extension;
+	}
+
+	public void setExtension(Extension extension) {
+		this.extension = extension;
+	}
     
+	
     
 }

@@ -1,6 +1,7 @@
 package com.jokkoapps.jokkoapps.controller;
 
 import com.jokkoapps.jokkoapps.exception.AppException;
+import com.jokkoapps.jokkoapps.model.Extension;
 import com.jokkoapps.jokkoapps.model.PasswordResetToken;
 import com.jokkoapps.jokkoapps.model.Personnel;
 import com.jokkoapps.jokkoapps.model.Role;
@@ -8,6 +9,7 @@ import com.jokkoapps.jokkoapps.model.RoleName;
 import com.jokkoapps.jokkoapps.model.Service;
 import com.jokkoapps.jokkoapps.model.User;
 import com.jokkoapps.jokkoapps.model.VerificationToken;
+import com.jokkoapps.jokkoapps.model.Widget;
 import com.jokkoapps.jokkoapps.payload.ApiResponse;
 import com.jokkoapps.jokkoapps.payload.ChangePasswordRequest;
 import com.jokkoapps.jokkoapps.payload.JwtAuthenticationResponse;
@@ -16,11 +18,13 @@ import com.jokkoapps.jokkoapps.payload.OnRegistrationCompleteEvent;
 import com.jokkoapps.jokkoapps.payload.ResetPasswordRequest;
 import com.jokkoapps.jokkoapps.payload.SignUpRequest;
 import com.jokkoapps.jokkoapps.repository.AgentRepository;
+import com.jokkoapps.jokkoapps.repository.BtnRepository;
 import com.jokkoapps.jokkoapps.repository.PasswordResetTokenRepository;
 import com.jokkoapps.jokkoapps.repository.RoleRepository;
 import com.jokkoapps.jokkoapps.repository.ServiceRepository;
 import com.jokkoapps.jokkoapps.repository.UserRepository;
 import com.jokkoapps.jokkoapps.repository.VerificationTokenRepository;
+import com.jokkoapps.jokkoapps.repository.WidgetRepository;
 import com.jokkoapps.jokkoapps.security.CurrentUser;
 import com.jokkoapps.jokkoapps.security.JwtTokenProvider;
 import com.jokkoapps.jokkoapps.services.JokkoMailSender;
@@ -71,6 +75,9 @@ public class AuthController {
     @Autowired
     RoleRepository roleRepository;
 
+    @Autowired
+    WidgetRepository widgetRepo;
+    
     @Autowired
     PasswordEncoder passwordEncoder;
     
@@ -146,27 +153,24 @@ public class AuthController {
 		service.setDomaine(signUpRequest.getDomaine());
 		service.setEnabled(true);
 		
-		Personnel defaultPers = new Personnel();
+		Extension defaultextension = new Extension();
+		defaultextension.setExtension(UUID.randomUUID()
+            .toString());
+		defaultextension.setSipPassword(UUID.randomUUID()
+            .toString());
 		
-		defaultPers.setFirstname(user.getFirstname());
-		defaultPers.setLastname(user.getLastname());
-		defaultPers.setEmail(UUID.randomUUID().toString()+"@defaultuser.com");
-		defaultPers.setPassword("default");
-		defaultPers.setExtension(UUID.randomUUID().toString());
-		defaultPers.setSip_password(UUID.randomUUID().toString());
-		defaultPers.setEnabled(true);
-		defaultPers.setUser(user);
+		service.setDefaultextension(defaultextension);
 		
-		defaultPers.setUuidPers(UUID.randomUUID().toString());
 		
-		service.setDefaultSipUser(defaultPers.getExtension());
-		service.setDefaultSipPassword(defaultPers.getSip_password());
-
 		Service serviceResponse = serviceRepository.save(service);
 		
-		defaultPers.setService(serviceResponse);
+		Widget widget = new Widget();
 		
-		personnelRepository.save(defaultPers);
+		widget.setService(serviceResponse);
+		widget.setBtnBackground("#00695C");
+		widget.setTheme("#004D40");
+		widgetRepo.save(widget);
+		
         
         try {
         String appUrl = request.getContextPath();
