@@ -7,6 +7,7 @@ import com.jokkoapps.jokkoapps.model.Personnel;
 import com.jokkoapps.jokkoapps.model.Role;
 import com.jokkoapps.jokkoapps.model.RoleName;
 import com.jokkoapps.jokkoapps.model.Service;
+import com.jokkoapps.jokkoapps.model.ServiceType;
 import com.jokkoapps.jokkoapps.model.User;
 import com.jokkoapps.jokkoapps.model.VerificationToken;
 import com.jokkoapps.jokkoapps.model.Widget;
@@ -147,6 +148,12 @@ public class AuthController {
         
         Service service = new Service();  
         
+		if(signUpRequest.getServiceType().equalsIgnoreCase("SERVICE_CHAT")) {
+			service.setTypeService(ServiceType.SERVICE_CHAT);	
+		}else if(signUpRequest.getServiceType().equalsIgnoreCase("SERVICE_CALL")) {
+			service.setTypeService(ServiceType.SERVICE_CALL);	
+		}
+        
 		service.setUser(user);
 		service.setContactId("CONTACTCENTER_"+UUID.randomUUID()
             .toString());
@@ -158,8 +165,26 @@ public class AuthController {
             .toString());
 		defaultextension.setSipPassword(UUID.randomUUID()
             .toString());
+		defaultextension.setExtensionType("MANAGER");
+		defaultextension.setAccountCode(UUID.randomUUID()
+	            .toString());
+		defaultextension.setDisplayName(user.getFirstname()+" "+user.getLastname());
+		
+		Extension extensionUser = new Extension();
+		extensionUser.setExtension(UUID.randomUUID()
+            .toString());
+		extensionUser.setSipPassword(UUID.randomUUID()
+            .toString());
+		extensionUser.setExtensionType("USER");
+		extensionUser.setAccountCode(UUID.randomUUID()
+	            .toString());
+		extensionUser.setDisplayName(user.getFirstname()+" "+user.getLastname());
 		
 		service.setDefaultextension(defaultextension);
+		service.setDefaultextension(extensionUser);
+		
+		service.setDefaultextension(defaultextension);
+		service.setExtensionUser(extensionUser);
 		
 		
 		Service serviceResponse = serviceRepository.save(service);

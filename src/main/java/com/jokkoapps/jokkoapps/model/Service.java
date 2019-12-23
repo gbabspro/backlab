@@ -60,6 +60,10 @@ public class Service extends DateAudit {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "extension_id", referencedColumnName = "id")
     private Extension defaultextension;
+    
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "extension_user", referencedColumnName = "id")
+    private Extension extensionUser;
 
 	@Column(name = "enabled")
     private boolean enabled;
@@ -132,6 +136,14 @@ public class Service extends DateAudit {
 
 	public void setPersonnels(List<Personnel> personnels) {
 		this.personnels = personnels;
+	}
+
+	public Extension getExtensionUser() {
+		return extensionUser;
+	}
+
+	public void setExtensionUser(Extension extensionUser) {
+		this.extensionUser = extensionUser;
 	}
 	
 	

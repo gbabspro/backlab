@@ -111,6 +111,10 @@ public class PersonnelController {
     	
     	extension.setExtension(UUID.randomUUID().toString());
     	extension.setSipPassword(UUID.randomUUID().toString());
+    	extension.setExtensionType("AGENT");
+    	extension.setAccountCode(UUID.randomUUID()
+	            .toString());
+    	extension.setDisplayName(personnel.getFirstname()+" "+personnel.getLastname());
     	
     	personnel.setExtension(extension);
     	

@@ -97,8 +97,24 @@ public class ServiceController {
             .toString());
 		defaultextension.setSipPassword(UUID.randomUUID()
             .toString());
+		defaultextension.setExtensionType("MANAGER");
+		defaultextension.setAccountCode(UUID.randomUUID()
+	            .toString());
+		defaultextension.setDisplayName(user.getFirstname()+" "+user.getLastname());
+		
+		
+		Extension extensionUser = new Extension();
+		extensionUser.setExtension(UUID.randomUUID()
+            .toString());
+		extensionUser.setSipPassword(UUID.randomUUID()
+            .toString());
+		extensionUser.setExtensionType("USER");
+		extensionUser.setAccountCode(UUID.randomUUID()
+	            .toString());
+		extensionUser.setDisplayName(user.getFirstname()+" "+user.getLastname());
 		
 		service.setDefaultextension(defaultextension);
+		service.setExtensionUser(extensionUser);
 		
 		Service serviceResponse = serviceRepository.save(service);
 		

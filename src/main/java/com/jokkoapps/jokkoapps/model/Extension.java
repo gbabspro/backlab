@@ -25,6 +25,16 @@ public class Extension {
     @Size(max = 200)
     private String sipPassword;
     
+    @Size(max = 160)
+    private String displayName;
+    
+    @Size(max = 160)
+    private String accountCode;
+    
+    @NotBlank
+    @Size(max = 160)
+    private String extensionType;
+    
     public Extension() {
 	}
 
@@ -52,4 +62,29 @@ public class Extension {
 		this.sipPassword = sipPassword;
 	}
 
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getAccountCode() {
+		return accountCode;
+	}
+
+	public void setAccountCode(String accountCode) {
+		this.accountCode = accountCode;
+	}
+
+	public String getExtensionType() {
+		return extensionType;
+	}
+
+	public void setExtensionType(String extensionType) {
+		this.extensionType = extensionType;
+	}
+
+	
 }
