@@ -149,7 +149,8 @@ public class AuthController {
         Service service = new Service();  
         
 		if(signUpRequest.getServiceType().equalsIgnoreCase("SERVICE_CHAT")) {
-			service.setTypeService(ServiceType.SERVICE_CHAT);	
+            return new ResponseEntity(new ApiResponse(false, "Le service Chat n'est pas disponible pour le moement !"),
+                    HttpStatus.BAD_REQUEST);
 		}else if(signUpRequest.getServiceType().equalsIgnoreCase("SERVICE_CALL")) {
 			service.setTypeService(ServiceType.SERVICE_CALL);	
 		}
