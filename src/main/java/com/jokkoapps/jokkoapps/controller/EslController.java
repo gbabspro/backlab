@@ -5,17 +5,13 @@ import java.util.Optional;
 
 import org.freeswitch.esl.client.inbound.Client;
 import org.freeswitch.esl.client.transport.message.EslMessage;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jokkoapps.jokkoapps.model.Personnel;
-import com.jokkoapps.jokkoapps.payload.ApiResponse;
-import com.jokkoapps.jokkoapps.security.CurrentUser;
-import com.jokkoapps.jokkoapps.security.UserPrincipal;
 
 @RestController
 @RequestMapping("/api")
@@ -23,9 +19,9 @@ public class EslController {
 	
     @GetMapping("/operator/login")
     @PreAuthorize("hasRole('AGENT') or hasRole('MANAGER')")
-    public ResponseEntity<?> setLogin(String cmd) {
+    public ResponseEntity<?> setLogin(@PathVariable (value = "userId") Long userId) {
     	
-    	List<String> response = this.sendApiMsg(cmd);
+    	List<String> response = this.sendApiMsg("callcenter_config agent set status "+userId+" 'Logged Out'");
     	
     	for(String str : response) {
     	System.out.println(str);
