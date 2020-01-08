@@ -145,8 +145,9 @@ public class PersonnelController {
     	
     	
     	eslService.reloadService(personnel.getService().getDomaine());
+    	eslService.addNewAgent(personnel.getExtension().getExtension(), personnel.getService().getDomaine());
     	
-    	return ResponseEntity.accepted().body(personnel.getService().getDomaine());
+    	return ResponseEntity.accepted().body(agentSave);
     }
     
     @GetMapping("/operators/list")
