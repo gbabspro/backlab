@@ -44,6 +44,8 @@ public class EslServices {
 	        
 	         inboudClient.close();
 	         
+	         System.out.println("BODY BODY BODY BODY BODY BODY BODY "+response.getBodyLines());
+	         
 	         return response.getBodyLines();
 
 	      } catch (Throwable t) {
