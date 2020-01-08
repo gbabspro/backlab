@@ -28,6 +28,7 @@ public class EslServices {
     
     public void reloadService(String queue) {
     	
+    	System.out.println("callcenter_config queue reload "+queue);
     	String str = "callcenter_config queue reload "+queue;
     	this.sendApiMsg(str);
     }
@@ -36,7 +37,7 @@ public class EslServices {
 	    try {
 
 	        final Client inboudClient = new Client();
-	        inboudClient.connect("srv.babacargaye.com", 8021, "ClueCon", 10);
+	        inboudClient.connect("127.0.0.1", 8021, "ClueCon", 10);
 	        
 	        EslMessage response = inboudClient.sendSyncApiCommand(msg, "" );
 	        
