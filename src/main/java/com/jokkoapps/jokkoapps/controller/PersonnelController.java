@@ -143,7 +143,7 @@ public class PersonnelController {
     	personnel.setPassword(generatedString);
     	jokkoMailSender.sendMailNewAgent(personnel);
     	
-    	eslService.addNewAgent(personnel.getExtension().getExtension(), personnel.getService().getDomaine());
+    	eslService.reloadService(personnel.getService().getDomaine());
     	
     	return ResponseEntity.accepted().body(agentSave);
     }

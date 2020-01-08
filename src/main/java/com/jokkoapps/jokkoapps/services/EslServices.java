@@ -21,10 +21,17 @@ public class EslServices {
     
     public void addNewAgent(String agentId, String queue) {
     	
-    	String str = "callcenter_config tier add "+queue+" "+agentId+" @51.91.120.241 ";
+    	String str = "callcenter_config tier add "+queue+" "+agentId+" @51.91.120.241";
     	this.sendApiMsg(str);
     }
 	
+    
+    public void reloadService(String queue) {
+    	
+    	String str = "callcenter_config queue reload "+queue;
+    	this.sendApiMsg(str);
+    }
+    
 	private List<String> sendApiMsg(String msg) {
 	    try {
 
