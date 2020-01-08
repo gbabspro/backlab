@@ -43,6 +43,7 @@ import com.jokkoapps.jokkoapps.repository.ServiceRepository;
 import com.jokkoapps.jokkoapps.repository.UserRepository;
 import com.jokkoapps.jokkoapps.security.CurrentUser;
 import com.jokkoapps.jokkoapps.security.UserPrincipal;
+import com.jokkoapps.jokkoapps.services.EslServices;
 import com.jokkoapps.jokkoapps.services.JokkoMailSender;
 
 @RestController
@@ -60,6 +61,9 @@ public class PersonnelController {
     
     @Autowired
     UserRepository userRepository;
+    
+    @Autowired
+    EslServices eslService;
     
     @Autowired
     JokkoMailSender jokkoMailSender;
@@ -138,6 +142,8 @@ public class PersonnelController {
     	
     	personnel.setPassword(generatedString);
     	jokkoMailSender.sendMailNewAgent(personnel);
+    	
+    	eslService.addNewAgent(personnel.getExtension().getExtension(), personnel.getService().getDomaine());
     	
     	return ResponseEntity.accepted().body(agentSave);
     }
