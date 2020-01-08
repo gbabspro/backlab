@@ -28,7 +28,6 @@ public class EslServices {
     
     public void reloadService(String queue) {
     	
-    	System.out.println("callcenter_config queue reload "+queue);
     	String str = "callcenter_config queue reload "+queue;
     	this.sendApiMsg(str);
     }
@@ -43,8 +42,6 @@ public class EslServices {
 	        
 	        
 	         inboudClient.close();
-	         
-	         System.out.println("BODY BODY BODY BODY BODY BODY BODY "+response.getBodyLines());
 	         
 	         return response.getBodyLines();
 

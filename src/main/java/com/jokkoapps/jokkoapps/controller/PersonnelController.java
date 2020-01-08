@@ -143,10 +143,10 @@ public class PersonnelController {
     	personnel.setPassword(generatedString);
     	jokkoMailSender.sendMailNewAgent(personnel);
     	
-    	System.out.println("################################## ############################ #########################################");
+    	
     	eslService.reloadService(personnel.getService().getDomaine());
     	
-    	return ResponseEntity.accepted().body(agentSave);
+    	return ResponseEntity.accepted().body(personnel.getService().getDomaine());
     }
     
     @GetMapping("/operators/list")
