@@ -30,6 +30,16 @@ public class EslController {
     	return ResponseEntity.accepted().body(response);
     }
     
+    
+    @GetMapping("/operator/list/{domaine}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<?> getOperatorsList(@PathVariable (value = "domaine") String domaine) {
+    	
+    	List<String> response = this.sendApiMsg("callcenter_config queue list agents "+domaine);
+    	
+    	return ResponseEntity.accepted().body(response);
+    }
+    
     @GetMapping("/operator/logout/{userId}")
     @PreAuthorize("hasRole('AGENT') or hasRole('MANAGER')")
     public ResponseEntity<?> setLogout(@PathVariable (value = "userId") String userId) {
