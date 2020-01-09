@@ -24,7 +24,7 @@ public class EslServices {
     	String strReload = "callcenter_config queue reload "+queue;
     	this.sendApiMsg(strReload);
     	
-    	String str = "callcenter_config tier add "+queue+" "+agentId+" @51.91.120.241";
+    	String str = "callcenter_config tier add "+queue+" "+agentId+"@51.91.120.241";
     	this.sendApiMsg(str);
     }
 	
