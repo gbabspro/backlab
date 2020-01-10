@@ -3,7 +3,7 @@ package com.jokkoapps.jokkoapps.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.jokkoapps.jokkoapps.model.User;
+import com.jokkoapps.jokkoapps.model.Manager;
 import com.jokkoapps.jokkoapps.model.VerificationToken;
 
 @Repository
@@ -12,6 +12,6 @@ extends JpaRepository<VerificationToken, Long> {
 
   VerificationToken findByToken(String token);
 
-  VerificationToken findByUser(User user);
+  VerificationToken findByManager(Manager manager);
   
 }

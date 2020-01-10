@@ -2,6 +2,7 @@ package com.jokkoapps.jokkoapps.controller;
 
 import com.jokkoapps.jokkoapps.exception.AppException;
 import com.jokkoapps.jokkoapps.model.Extension;
+import com.jokkoapps.jokkoapps.model.Manager;
 import com.jokkoapps.jokkoapps.model.PasswordResetToken;
 import com.jokkoapps.jokkoapps.model.Personnel;
 import com.jokkoapps.jokkoapps.model.Role;
@@ -19,7 +20,7 @@ import com.jokkoapps.jokkoapps.payload.OnRegistrationCompleteEvent;
 import com.jokkoapps.jokkoapps.payload.ResetPasswordRequest;
 import com.jokkoapps.jokkoapps.payload.SignUpRequest;
 import com.jokkoapps.jokkoapps.repository.AgentRepository;
-import com.jokkoapps.jokkoapps.repository.BtnRepository;
+import com.jokkoapps.jokkoapps.repository.ManagerRepository;
 import com.jokkoapps.jokkoapps.repository.PasswordResetTokenRepository;
 import com.jokkoapps.jokkoapps.repository.RoleRepository;
 import com.jokkoapps.jokkoapps.repository.ServiceRepository;
@@ -28,7 +29,10 @@ import com.jokkoapps.jokkoapps.repository.VerificationTokenRepository;
 import com.jokkoapps.jokkoapps.repository.WidgetRepository;
 import com.jokkoapps.jokkoapps.security.CurrentUser;
 import com.jokkoapps.jokkoapps.security.JwtTokenProvider;
+import com.jokkoapps.jokkoapps.services.ContactcenterService;
 import com.jokkoapps.jokkoapps.services.JokkoMailSender;
+import com.jokkoapps.jokkoapps.services.ManagerService;
+import com.jokkoapps.jokkoapps.services.PersonnelService;
 import com.jokkoapps.jokkoapps.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +76,9 @@ public class AuthController {
 
     @Autowired
     UserRepository userRepository;
+    
+    @Autowired
+    ManagerRepository managerRepository;
 
     @Autowired
     RoleRepository roleRepository;
@@ -90,9 +97,18 @@ public class AuthController {
     
     @Autowired
     ApplicationEventPublisher eventPublisher;
+    
+    @Autowired
+    ContactcenterService contactcenterService;
+    
+    @Autowired
+    PersonnelService personnelService;
 
     @Autowired
     UserService userService;
+    
+    @Autowired
+    ManagerService managerService;
     
     @Autowired
     JokkoMailSender jokkoMailSender;
@@ -123,7 +139,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest, WebRequest request) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest, WebRequest request) throws MessagingException, IOException {
 
         if(userRepository.existsByEmail(signUpRequest.getEmail())) {
             return new ResponseEntity(new ApiResponse(false, "Email Address already in use!"),
@@ -136,72 +152,30 @@ public class AuthController {
                     HttpStatus.BAD_REQUEST);
         }
         
-        
-
         // Creating user's account
-        User user = new User(signUpRequest.getFirstname(), signUpRequest.getLastname(),
+        Manager manager = new Manager(signUpRequest.getFirstname(), signUpRequest.getLastname(),
                 signUpRequest.getEmail(), signUpRequest.getPassword());
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        User result = userRepository.save(user);
+        manager.setPassword(passwordEncoder.encode(manager.getPassword()));
+        Manager result = managerRepository.save(manager);
         
-        Service service = new Service();  
+        Service service = new Service();
         
 		if(signUpRequest.getServiceType().equalsIgnoreCase("SERVICE_CHAT")) {
-            return new ResponseEntity(new ApiResponse(false, "Le service Chat n'est pas disponible pour le moement !"),
-                    HttpStatus.BAD_REQUEST);
+            return null;
 		}else if(signUpRequest.getServiceType().equalsIgnoreCase("SERVICE_CALL")) {
 			service.setTypeService(ServiceType.SERVICE_CALL);	
 		}
         
-		service.setUser(user);
-		service.setContactId("CONTACTCENTER_"+UUID.randomUUID()
-            .toString());
+		service.setManager(manager);
+		service.setContactId("CONTACTCENTER_"+UUID.randomUUID().toString());
 		service.setDomaine(signUpRequest.getDomaine());
 		service.setEnabled(true);
-		
-		Extension defaultextension = new Extension();
-		defaultextension.setExtension(UUID.randomUUID()
-            .toString());
-		defaultextension.setSipPassword(UUID.randomUUID()
-            .toString());
-		defaultextension.setExtensionType("MANAGER");
-		defaultextension.setAccountCode(UUID.randomUUID()
-	            .toString());
-		defaultextension.setDisplayName(user.getFirstname()+" "+user.getLastname());
-		
-		Extension extensionUser = new Extension();
-		extensionUser.setExtension(UUID.randomUUID()
-            .toString());
-		extensionUser.setSipPassword(UUID.randomUUID()
-            .toString());
-		extensionUser.setExtensionType("USER");
-		extensionUser.setAccountCode(UUID.randomUUID()
-	            .toString());
-		extensionUser.setDisplayName(user.getFirstname()+" "+user.getLastname());
-		
-		service.setDefaultextension(defaultextension);
-		service.setDefaultextension(extensionUser);
-		
-		service.setDefaultextension(defaultextension);
-		service.setExtensionUser(extensionUser);
-		
-		
-		Service serviceResponse = serviceRepository.save(service);
-		
-		Widget widget = new Widget();
-		
-		widget.setService(serviceResponse);
-		widget.setBtnBackground("#00695C");
-		widget.setTheme("#004D40");
-		widgetRepo.save(widget);
-		
+        
+        contactcenterService.createContactcenter(service);
         
         try {
-        String appUrl = request.getContextPath();
-        eventPublisher.publishEvent(new OnRegistrationCompleteEvent
-          (result, request.getLocale(), appUrl));
+	        String appUrl = request.getContextPath();
+	        eventPublisher.publishEvent(new OnRegistrationCompleteEvent(result, request.getLocale(), appUrl));
         } catch (Exception me) {
         	System.out.println("message erreur erreur "+me.getMessage());
         }
@@ -214,19 +188,18 @@ public class AuthController {
     }
     
     @GetMapping("/regitrationConfirm")
-    public ResponseEntity<?> confirmRegistration
-      (WebRequest request, @RequestParam("token") String token) {
+    public ResponseEntity<?> confirmRegistration(WebRequest request, @RequestParam("token") String token) {
       
         Locale locale = request.getLocale();
          
-        VerificationToken verificationToken = userService.getVerificationToken(token);
+        VerificationToken verificationToken = managerService.getVerificationToken(token);
         
         if (verificationToken == null) {
             return new ResponseEntity(new ApiResponse(false, "Ce lien est invalide !"),
                     HttpStatus.BAD_REQUEST);
         }
          
-        User user = verificationToken.getUser();
+        Manager manager = verificationToken.getManager();
         
         Calendar cal = Calendar.getInstance();
         
@@ -242,10 +215,10 @@ public class AuthController {
         
         userRoles.add(userRole);
 
-        user.setRoles(userRoles);
+        manager.setRoles(userRoles);
 
-        user.setEnabled(true); 
-        userRepository.save(user); 
+        manager.setEnabled(true); 
+        managerRepository.save(manager); 
 
         return ResponseEntity.accepted().body(new ApiResponse(true, "Votre compte a bien étè activé !"));
     }
@@ -262,9 +235,9 @@ public class AuthController {
                     HttpStatus.BAD_REQUEST);
         }
         
-        VerificationToken newToken = userService.generateNewVerificationToken(vToken);
+        VerificationToken newToken = managerService.generateNewVerificationToken(vToken);
          
-        User user = userService.getUser(newToken.getToken());
+        User user = managerService.getManagerByToken(newToken.getToken());
                
 		jokkoMailSender.sendMailResetPassword(user, newToken.getToken());
 		
@@ -274,21 +247,21 @@ public class AuthController {
     @PostMapping("/resetPassword")
     public ResponseEntity<?>  resetPassword(@Valid @RequestBody ResetPasswordRequest passwordRequest) throws MessagingException, IOException {
     	
-    	Optional<User> opntionalUser = userRepository.findByEmail(passwordRequest.getEmail());
+    	Optional<Manager> isManager = managerRepository.findByEmail(passwordRequest.getEmail());
 		
-		if (opntionalUser.isPresent() != true) {
+		if (isManager.isPresent() != true) {
             return new ResponseEntity(new ApiResponse(false, "l'e-mail ne correspond à aucun compte !"),
                     HttpStatus.BAD_REQUEST);
 		}
 		
-		User user = opntionalUser.get();
+		Manager manager = isManager.get();
 		
 		String token = UUID.randomUUID().toString();
-		userService.createPasswordResetTokenForUser(user, token);
+		userService.createPasswordResetTokenForUser(manager, token);
 		
-		jokkoMailSender.sendMailResetPassword(user, token);
+		jokkoMailSender.sendMailResetPassword(manager, token);
 		
-		return ResponseEntity.accepted().body(new ApiResponse(true, "Un e-mail de réinitialisation a été envoyé sur votre adresse e-mail : "+user.getEmail()));
+		return ResponseEntity.accepted().body(new ApiResponse(true, "Un e-mail de réinitialisation a été envoyé sur votre adresse e-mail : "+manager.getEmail()));
 		
 	}
     

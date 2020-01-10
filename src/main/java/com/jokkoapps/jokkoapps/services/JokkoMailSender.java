@@ -1,13 +1,11 @@
 package com.jokkoapps.jokkoapps.services;
 
 import java.io.IOException;
-import java.util.UUID;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -19,9 +17,6 @@ import com.jokkoapps.jokkoapps.model.User;
 
 @Service
 public class JokkoMailSender {
-
-    @Autowired
-    private MessageSource messages;
   
     @Autowired
     private JavaMailSender mailSender;

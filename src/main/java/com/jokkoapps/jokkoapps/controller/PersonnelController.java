@@ -45,6 +45,7 @@ import com.jokkoapps.jokkoapps.security.CurrentUser;
 import com.jokkoapps.jokkoapps.security.UserPrincipal;
 import com.jokkoapps.jokkoapps.services.EslServices;
 import com.jokkoapps.jokkoapps.services.JokkoMailSender;
+import com.jokkoapps.jokkoapps.services.PersonnelService;
 
 @RestController
 @RequestMapping("/api")
@@ -61,6 +62,9 @@ public class PersonnelController {
     
     @Autowired
     UserRepository userRepository;
+    
+    @Autowired
+    PersonnelService personnelService;
     
     @Autowired
     EslServices eslService;
@@ -96,72 +100,20 @@ public class PersonnelController {
                     HttpStatus.BAD_REQUEST);
 		}
 		
-    	
     	Personnel personnel = new Personnel();
-    	
-    	Service service = serviceOptional.get();
+
     	personnel.setUuidPers(UUID.randomUUID().toString());
-    	personnel.setService(service);
     	personnel.setFirstname(newPersonnelRequest.getFirstname());
     	personnel.setLastname(newPersonnelRequest.getLastname());
     	personnel.setEmail(newPersonnelRequest.getEmail());
-    	
-
-    	User user = opntionalUser.get();
 		
-    	personnel.setUser(user);
+    	Personnel newPersonnel = personnelService.createPersonnel(serviceOptional.get(), personnel);
     	
-    	Extension extension = new Extension();
-    	
-    	extension.setExtension(UUID.randomUUID().toString());
-    	extension.setSipPassword(UUID.randomUUID().toString());
-    	extension.setExtensionType("AGENT");
-    	extension.setAccountCode(UUID.randomUUID()
-	            .toString());
-    	extension.setDisplayName(personnel.getFirstname()+" "+personnel.getLastname());
-    	
-    	personnel.setExtension(extension);
-    	
-    	int length = 10;
-        boolean useLetters = true;
-        boolean useNumbers = false;
-        String generatedString = RandomStringUtils.random(length, useLetters, useNumbers);
-        
-    	personnel.setPassword(passwordEncoder.encode(generatedString));
-    	
-        Role userRole = roleRepository.findByName(RoleName.ROLE_AGENT)
-        .orElseThrow(() -> new AppException("User Role not set."));
-        
-        Set<Role> userRoles = new HashSet<>();
-        
-        userRoles.add(userRole);
-        personnel.setRoles(userRoles);
+    	jokkoMailSender.sendMailNewAgent(newPersonnel);
     			
-    	personnel.setEnabled(true);
-    	Personnel agentSave = personnelRepository.save(personnel);
-    	
-    	personnel.setPassword(generatedString);
-    	jokkoMailSender.sendMailNewAgent(personnel);
-    	
-    	eslService.addNewAgent(personnel.getExtension().getExtension(), personnel.getService().getDomaine());
-    	
-    	return ResponseEntity.accepted().body(agentSave);
+    	return ResponseEntity.accepted().body(newPersonnel);
     }
     
-    @GetMapping("/operators/list")
-    @PreAuthorize("hasRole('MANAGER')")
-    public ResponseEntity<?> getUserServices(@CurrentUser UserPrincipal currentUser) {
-    	
-    	List<Personnel> listOperateurs = personnelRepository.findByUserId(currentUser.getId());
-    	
-    	if(listOperateurs.isEmpty()) {
-    		return new ResponseEntity(new ApiResponse(false, "Aucun opérateur trouvé !"),
-                    HttpStatus.NOT_FOUND);
-    	}
-    	
-    	return ResponseEntity.status(HttpStatus.OK)
-    	        .body(listOperateurs);
-    }
     
 
     

@@ -23,21 +23,18 @@ public class User extends DateAudit {
 
     @NotBlank
     @Size(max = 40)
-    private String firstname;
+	protected String firstname;
     
     @Size(max = 40)
-    private String lastname;
+	protected String lastname;
 
     @Column(name = "enabled")
     private boolean enabled;
     
-    @Size(max = 80)
-    private String phone;
-    
     @NotBlank
     @Size(max = 160)
     @Email
-    private String email;
+	protected String email;
 
     @JsonIgnore
     @NotBlank
@@ -54,15 +51,6 @@ public class User extends DateAudit {
 
     }
 
-    public User(String firstname, String lastname, String phone, String email, String password) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.phone = phone;
-        this.email = email;
-        this.password = password;
-        this.enabled=false;
-    }
-    
     public User(String firstname, String lastname, String email, String password) {
         this.firstname = firstname;
         this.lastname = lastname;
@@ -71,9 +59,6 @@ public class User extends DateAudit {
         this.enabled=false;
     }
     
-    
-
-
     public boolean isEnabled() {
 		return enabled;
 	}
@@ -104,14 +89,6 @@ public class User extends DateAudit {
 
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
 	}
 
 	public String getEmail() {

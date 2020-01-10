@@ -34,11 +34,8 @@ public class Personnel extends User{
     @Column(unique = true)
     private String uuidPers;
     
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private User user;
+    @Column(name = "is_default_pers")
+    private boolean isDefaultPers;
     
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "extension_id", referencedColumnName = "id")
@@ -46,7 +43,6 @@ public class Personnel extends User{
     
 	public Personnel() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public Service getService() {
@@ -55,14 +51,6 @@ public class Personnel extends User{
 
 	public void setService(Service service) {
 		this.service = service;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
 	}
 
 	public String getUuidPers() {
@@ -81,6 +69,40 @@ public class Personnel extends User{
 		this.extension = extension;
 	}
     
-	
+	public boolean isDefaultPers() {
+		return isDefaultPers;
+	}
+
+	public void setDefaultPers(boolean isDefaultPers) {
+		this.isDefaultPers = isDefaultPers;
+	}
+
+	public String getEmail() {
+		
+		if(this.isDefaultPers()) {
+			return this.getService().getManager().getEmail();
+		}
+		
+		return email;
+	}
     
+	
+	public String getFirstname() {
+		
+		if(this.isDefaultPers()) {
+			return this.getService().getManager().getFirstname();
+		}
+		
+		return firstname;
+	}
+
+	public String getLastname() {
+		
+		if(this.isDefaultPers()) {
+			return this.getService().getManager().getLastname();
+		}
+		
+		return lastname;
+	}
+
 }

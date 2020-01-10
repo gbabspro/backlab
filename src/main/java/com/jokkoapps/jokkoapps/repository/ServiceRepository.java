@@ -15,7 +15,7 @@ import com.jokkoapps.jokkoapps.model.User;
 @Repository
 public interface ServiceRepository extends JpaRepository<Service, Long>{
 	
-    List<Service> findByUserId(Long userId);
+    List<Service> findByManagerId(Long managerid);
     Service findByTypeService(ServiceType serviceName); 
     boolean existsByDomaine(String domaine);
 }

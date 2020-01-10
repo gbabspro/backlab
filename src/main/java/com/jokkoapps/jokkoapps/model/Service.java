@@ -53,13 +53,13 @@ public class Service extends DateAudit {
     
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "manager_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User user;
+    private Manager manager;
     
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "extension_id", referencedColumnName = "id")
-    private Extension defaultextension;
+    private Personnel defaultextension;
     
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "extension_user", referencedColumnName = "id")
@@ -98,14 +98,6 @@ public class Service extends DateAudit {
 	}
 
 
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -122,11 +114,13 @@ public class Service extends DateAudit {
 		this.domaine = domaine;
 	}
 
-	public Extension getDefaultextension() {
+
+
+	public Personnel getDefaultextension() {
 		return defaultextension;
 	}
 
-	public void setDefaultextension(Extension defaultextension) {
+	public void setDefaultextension(Personnel defaultextension) {
 		this.defaultextension = defaultextension;
 	}
 
@@ -144,6 +138,14 @@ public class Service extends DateAudit {
 
 	public void setExtensionUser(Extension extensionUser) {
 		this.extensionUser = extensionUser;
+	}
+
+	public Manager getManager() {
+		return manager;
+	}
+
+	public void setManager(Manager manager) {
+		this.manager = manager;
 	}
 	
 	

@@ -17,8 +17,10 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.spring3.SpringTemplateEngine;
 
+import com.jokkoapps.jokkoapps.model.Manager;
 import com.jokkoapps.jokkoapps.model.User;
 import com.jokkoapps.jokkoapps.payload.OnRegistrationCompleteEvent;
+import com.jokkoapps.jokkoapps.services.ManagerService;
 import com.jokkoapps.jokkoapps.services.UserService;
 
 import org.thymeleaf.TemplateEngine;
@@ -29,7 +31,7 @@ public class RegistrationListener implements
   ApplicationListener<OnRegistrationCompleteEvent> {
   
     @Autowired
-    private UserService service;
+    private ManagerService managerService;
   
     @Autowired
     private MessageSource messages;
@@ -57,19 +59,19 @@ public class RegistrationListener implements
     	
     	Context ctx = new Context();
 
-        User user = event.getUser();
+        Manager manager = event.getManager();
         String token = UUID.randomUUID().toString();
-        service.createVerificationToken(user, token);
+        managerService.createVerificationToken(manager, token);
         
         
         String confirmationUrl = "http://localhost:3000/pages/confirm-registration/" + token;
-        String name = user.getFirstname()+" "+user.getLastname();
+        String name = manager.getFirstname()+" "+manager.getLastname();
     	
         ctx.setVariable("name", name);
         ctx.setVariable("confirmationUrl", confirmationUrl);
     	
 
-        String recipientAddress = user.getEmail();
+        String recipientAddress = manager.getEmail();
         String subject = "Activez votre compte";
          
         MimeMessage mimeMessage = this.mailSender.createMimeMessage();

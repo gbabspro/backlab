@@ -58,7 +58,7 @@ public class EslController {
 	    try {
 
 	        final Client inboudClient = new Client();
-	        inboudClient.connect("127.0.0.1", 8021, "ClueCon", 10);
+	        inboudClient.connect("srv.babacargaye.com", 8021, "ClueCon", 10);
 	        
 	         EslMessage response = inboudClient.sendSyncApiCommand(msg, "" );
 	        

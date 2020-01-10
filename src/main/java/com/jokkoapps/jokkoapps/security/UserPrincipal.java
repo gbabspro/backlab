@@ -30,13 +30,12 @@ public class UserPrincipal implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(Long id, String firstname, String lastname, String email, String password, String phone, boolean enabled, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(Long id, String firstname, String lastname, String email, String password, boolean enabled, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
         this.password = password;
-        this.phone = phone;
         this.enabled = enabled;
         this.authorities = authorities;
     }
@@ -53,7 +52,6 @@ public class UserPrincipal implements UserDetails {
                 user.getLastname(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getPhone(),
                 user.isEnabled(),
                 authorities
         );

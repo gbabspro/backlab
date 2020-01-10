@@ -127,7 +127,6 @@ public class UserController {
 		
 		User user = opntionalUser.get();
 		
-		user.setPhone(updateUserRequest.getPhone());
 		user.setFirstname(updateUserRequest.getFirstname());
 		user.setLastname(updateUserRequest.getLastname());
 

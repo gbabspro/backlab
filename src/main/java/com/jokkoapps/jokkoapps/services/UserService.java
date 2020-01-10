@@ -22,30 +22,12 @@ public class UserService {
 	
     @Autowired
     private UserRepository repository;
- 
-    @Autowired
-    private VerificationTokenRepository tokenRepository;
     
     @Autowired
     private PasswordResetTokenRepository passwordTokenRepository;
     
     @Autowired
     private PasswordEncoder passwordEncoder;
- 
-    
-    public User getUser(String verificationToken) {
-        User user = tokenRepository.findByToken(verificationToken).getUser();
-        return user;
-    }
-
-    public VerificationToken getVerificationToken(String VerificationToken) {
-        return tokenRepository.findByToken(VerificationToken);
-    }
-     
-    public void createVerificationToken(User user, String token) {
-        VerificationToken myToken = new VerificationToken(token, user);
-        tokenRepository.save(myToken);
-    }
     
     public void saveRegisteredUser(User user) {
     	repository.save(user);
@@ -68,12 +50,6 @@ public class UserService {
     	return true;
     }
     
-    public VerificationToken generateNewVerificationToken(VerificationToken vToken) {
-        vToken.setToken(UUID.randomUUID()
-            .toString());
-        vToken = tokenRepository.save(vToken);
-        return vToken;
-    }
     
     public boolean checkIfValidOldPassword(final User user, final String oldPassword) {
         return passwordEncoder.matches(oldPassword, user.getPassword());

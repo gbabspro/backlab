@@ -23,8 +23,8 @@ public class VerificationToken {
     private String token;
    
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "user_id")
-    private User user;
+    @JoinColumn(nullable = false, name = "manager_id")
+    private Manager manager;
      
     private Date expiryDate;
     
@@ -40,11 +40,10 @@ public class VerificationToken {
         this.expiryDate = calculateExpiryDate(EXPIRATION);
     }
 
-    public VerificationToken(final String token, final User user) {
+    public VerificationToken(final String token, final Manager manager) {
         super();
-
         this.token = token;
-        this.user = user;
+        this.manager = manager;
         this.expiryDate = calculateExpiryDate(EXPIRATION);
     }
 
@@ -71,14 +70,6 @@ public class VerificationToken {
 		this.token = token;
 	}
 
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
 	public Date getExpiryDate() {
 		return expiryDate;
 	}
@@ -89,6 +80,14 @@ public class VerificationToken {
 
 	public static int getExpiration() {
 		return EXPIRATION;
+	}
+
+	public Manager getManager() {
+		return manager;
+	}
+
+	public void setManager(Manager manager) {
+		this.manager = manager;
 	}
      
 }

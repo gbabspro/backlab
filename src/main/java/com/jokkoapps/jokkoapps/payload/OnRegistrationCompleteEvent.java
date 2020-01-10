@@ -4,18 +4,18 @@ import java.util.Locale;
 
 import org.springframework.context.ApplicationEvent;
 
-import com.jokkoapps.jokkoapps.model.User;
+import com.jokkoapps.jokkoapps.model.Manager;
 
 public class OnRegistrationCompleteEvent extends ApplicationEvent {
     private String appUrl;
     private Locale locale;
-    private User user;
+    private Manager manager;
  
     public OnRegistrationCompleteEvent(
-      User user, Locale locale, String appUrl) {
-        super(user);
+      Manager manager, Locale locale, String appUrl) {
+        super(manager);
          
-        this.user = user;
+        this.manager = manager;
         this.locale = locale;
         this.appUrl = appUrl;
     }
@@ -36,13 +36,15 @@ public class OnRegistrationCompleteEvent extends ApplicationEvent {
 		this.locale = locale;
 	}
 
-	public User getUser() {
-		return user;
+	public Manager getManager() {
+		return manager;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setManager(Manager manager) {
+		this.manager = manager;
 	}
+
+	
      
     
 }
