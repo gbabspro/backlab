@@ -1,5 +1,6 @@
 package com.jokkoapps.jokkoapps.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -36,31 +37,37 @@ public class EslController {
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<?> getOperatorsList(@PathVariable (value = "domaine") String domaine) {
     	
-    	//List<String> response = this.sendApiMsg("callcenter_config queue list agents "+domaine);
+    	List<String> response = this.sendApiMsg("callcenter_config queue list agents "+domaine);
     	
-    	String response[] = {
+    	/*String response[] = {
     	        "name|instance_id|uuid|type|contact|status|state|max_no_answer|wrap_up_time|reject_delay_time|busy_delay_time|no_answer_delay_time|last_bridge_start|last_bridge_end|last_offered_call|last_status_change|no_answer_count|calls_answered|talk_time|ready_time|external_calls_count",
         	    "40e52e34-7f6b-464a-900d-70e53f4b8918@51.91.120.241|single_box||callback|[leg_timeout=10]user/40e52e34-7f6b-464a-900d-70e53f4b8918@51.91.120.241|Available|Waiting|3|10|10|60|0|0|0|0|1578498038|0|0|0|0|0",
         	    "77e38532-4aca-4e7f-92d8-41e908487d92@51.91.120.241|single_box||callback|[leg_timeout=10]user/77e38532-4aca-4e7f-92d8-41e908487d92@51.91.120.241|Available|Waiting|3|10|10|60|0|0|0|0|1578496170|0|0|0|0|0",
         	    "82c05af0-dee4-4aa7-97ba-b8bbce8ceb27@51.91.120.241|single_box||callback|[leg_timeout=10]user/82c05af0-dee4-4aa7-97ba-b8bbce8ceb27@51.91.120.241|Available|Waiting|3|10|10|60|0|0|0|0|1578576729|0|0|0|0|0",
         	    "fc33bc7b-c8c9-4f80-b4c9-7ce3aad3ca27@51.91.120.241|single_box||callback|[leg_timeout=10]user/fc33bc7b-c8c9-4f80-b4c9-7ce3aad3ca27@51.91.120.241|Available|Waiting|3|10|10|60|0|0|0|0|1578577258|0|0|0|0|0",
         	    "c08e8925-329c-4739-b222-46b4daaac98c@51.91.120.241|single_box||callback|[leg_timeout=10]user/c08e8925-329c-4739-b222-46b4daaac98c@51.91.120.241|Available|Waiting|3|10|10|60|0|0|0|0|1578578059|0|0|0|0|0",
-        	    "+OK"};
+        	    "+OK"};*/
     	
-    	HashMap<String, String> header = new HashMap<String, String>();
+    	List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
+
     	
-    	System.out.println(" response[0] "+response[0]);
-    	String arrayHeader[] = response[0].split("\\|");
-    	for(String str : arrayHeader) {
-    		
-    		if(str.equalsIgnoreCase("name") || str.equalsIgnoreCase("status") || str.equalsIgnoreCase("state")) {
-    			header.put(str, "");
+    	int i=0;
+    	for(String line : response) {
+    		String pers[];
+    		if(i!=0 && i<response.size()-1) {
+    			pers = line.split("\\|");
+    			HashMap<String, String> tempResult = new HashMap<String, String>();
+    		    tempResult.put("name", pers[0]);
+    			tempResult.put("status", pers[5]);
+    			tempResult.put("state", pers[6]);
+    		    result.add(tempResult);
     		}
+    		
+    		i++;
     	}
-    	 
         	
 
-    	return ResponseEntity.accepted().body(header);
+    	return ResponseEntity.accepted().body(result);
     }
     
     @GetMapping("/operator/logout/{userId}")
