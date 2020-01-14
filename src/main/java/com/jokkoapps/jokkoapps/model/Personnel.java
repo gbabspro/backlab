@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 public class Personnel extends User{
     
 
+	@JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "service_id", nullable = false)
     private Service service;
