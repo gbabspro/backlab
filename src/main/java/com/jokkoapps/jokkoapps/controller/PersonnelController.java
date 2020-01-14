@@ -107,7 +107,7 @@ public class PersonnelController {
     	personnel.setLastname(newPersonnelRequest.getLastname());
     	personnel.setEmail(newPersonnelRequest.getEmail());
 		
-    	Personnel newPersonnel = personnelService.createPersonnel(serviceOptional.get(), personnel);
+    	Personnel newPersonnel = personnelService.createPersonnel(serviceOptional.get(), personnel, false);
     	
     	jokkoMailSender.sendMailNewAgent(newPersonnel);
     			

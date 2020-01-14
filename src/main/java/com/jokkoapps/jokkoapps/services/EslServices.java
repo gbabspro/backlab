@@ -27,6 +27,16 @@ public class EslServices {
     	String str = "callcenter_config tier add "+queue+" "+agentId+"@51.91.120.241";
     	this.sendApiMsg(str);
     }
+    
+    
+    public void addNewCallcenter(String agentId, String queue) {
+    	
+    	String strReload = "callcenter_config queue load "+queue;
+    	this.sendApiMsg(strReload);
+    	
+    	String str = "callcenter_config tier add "+queue+" "+agentId+"@51.91.120.241";
+    	this.sendApiMsg(str);
+    }
 	
     
     public void reloadService(String queue) {
