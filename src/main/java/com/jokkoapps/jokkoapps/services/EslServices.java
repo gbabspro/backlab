@@ -19,7 +19,7 @@ public class EslServices {
     	this.sendApiMsg(str);
     }
     
-    public void addNewAgent(String agentId, String queue) {
+    public void addNewAgent(String queue) {
     	
     	String strReload = "callcenter_config queue reload "+queue;
     	this.sendApiMsg(strReload);
@@ -27,9 +27,15 @@ public class EslServices {
     
 	
     
+    public void loadService(String queue) {
+    	
+    	String str = "callcenter_config queue load "+queue;
+    	this.sendApiMsg(str);
+    }
+    
     public void reloadService(String queue) {
     	
-    	String str = "callcenter_config queue reload "+queue;
+    	String str = "callcenter_config queue load "+queue;
     	this.sendApiMsg(str);
     }
     
@@ -37,7 +43,7 @@ public class EslServices {
 	    try {
 
 	        final Client inboudClient = new Client();
-	        inboudClient.connect("127.0.0.1", 8021, "ClueCon", 10);
+	        inboudClient.connect("srv.babacargaye.com", 8021, "ClueCon", 10);
 	        
 	        EslMessage response = inboudClient.sendSyncApiCommand(msg, "" );
 	        

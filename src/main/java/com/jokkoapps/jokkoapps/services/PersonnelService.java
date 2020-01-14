@@ -42,9 +42,6 @@ public class PersonnelService {
 	
 	@Autowired
 	private AgentRepository personnelRepository;
-	
-    @Autowired
-    EslServices eslService;
 
     public Personnel createPersonnel(com.jokkoapps.jokkoapps.model.Service service, Personnel personnel) throws MessagingException, IOException {
 
@@ -83,8 +80,6 @@ public class PersonnelService {
     	// Remettre mot de passe clair pour envoi mail
     	personnel.setPassword(generatedString);
     	
-    	// Configuration personnel dans serveur freeswitch
-    	eslService.addNewAgent(personnel.getExtension().getExtension(), personnel.getService().getDomaine());
  
     	
     	return personnel;

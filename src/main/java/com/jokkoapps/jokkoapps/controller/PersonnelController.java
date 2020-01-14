@@ -109,6 +109,10 @@ public class PersonnelController {
 		
     	Personnel newPersonnel = personnelService.createPersonnel(serviceOptional.get(), personnel);
     	
+		// Configuration personnel dans serveur freeswitch
+    	eslService.loadService(newPersonnel.getService().getDomaine());
+    	
+    	
     	jokkoMailSender.sendMailNewAgent(newPersonnel);
     			
     	return ResponseEntity.accepted().body(newPersonnel);

@@ -33,6 +33,7 @@ public class ContactcenterService {
     
     @Autowired
     WidgetRepository widgetRepo;
+    
 
     public com.jokkoapps.jokkoapps.model.Service createContactcenter(com.jokkoapps.jokkoapps.model.Service service) throws MessagingException, IOException {
     

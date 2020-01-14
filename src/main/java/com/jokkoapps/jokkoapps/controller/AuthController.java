@@ -30,6 +30,7 @@ import com.jokkoapps.jokkoapps.repository.WidgetRepository;
 import com.jokkoapps.jokkoapps.security.CurrentUser;
 import com.jokkoapps.jokkoapps.security.JwtTokenProvider;
 import com.jokkoapps.jokkoapps.services.ContactcenterService;
+import com.jokkoapps.jokkoapps.services.EslServices;
 import com.jokkoapps.jokkoapps.services.JokkoMailSender;
 import com.jokkoapps.jokkoapps.services.ManagerService;
 import com.jokkoapps.jokkoapps.services.PersonnelService;
@@ -122,6 +123,9 @@ public class AuthController {
     @Autowired
     private VerificationTokenRepository tokenRepository;
     
+    @Autowired
+    EslServices eslService;
+    
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
     	
@@ -184,6 +188,10 @@ public class AuthController {
                 .fromCurrentContextPath().path("/api/users/me")
                 .buildAndExpand(result.getEmail()).toUri();
 
+		// Configuration personnel dans serveur freeswitch
+		System.out.println("loading............. "+ service.getDomaine());
+    	eslService.reloadService(service.getDomaine());
+    	
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
     }
     

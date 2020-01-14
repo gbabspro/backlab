@@ -70,6 +70,16 @@ public class EslController {
     	return ResponseEntity.accepted().body(result);
     }
     
+    
+    @GetMapping("/load/service/{domaine}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<?> loadService(@PathVariable (value = "domaine") String domaine) {
+    	
+    	List<String> response = this.sendApiMsg("callcenter_config queue load "+domaine);
+   
+    	return ResponseEntity.accepted().body(response);
+    }
+    
     @GetMapping("/operator/logout/{userId}")
     @PreAuthorize("hasRole('AGENT') or hasRole('MANAGER')")
     public ResponseEntity<?> setLogout(@PathVariable (value = "userId") String userId) {
@@ -88,7 +98,7 @@ public class EslController {
 	    try {
 
 	        final Client inboudClient = new Client();
-	        inboudClient.connect("127.0.0.1", 8021, "ClueCon", 10);
+	        inboudClient.connect("srv.babacargaye.com", 8021, "ClueCon", 10);
 	        
 	         EslMessage response = inboudClient.sendSyncApiCommand(msg, "" );
 	        

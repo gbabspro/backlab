@@ -35,6 +35,7 @@ import com.jokkoapps.jokkoapps.repository.WidgetRepository;
 import com.jokkoapps.jokkoapps.security.CurrentUser;
 import com.jokkoapps.jokkoapps.security.UserPrincipal;
 import com.jokkoapps.jokkoapps.services.ContactcenterService;
+import com.jokkoapps.jokkoapps.services.EslServices;
 
 @RestController
 @RequestMapping("/api")
@@ -61,6 +62,9 @@ public class ServiceController {
 	
     @Autowired
     ContactcenterService contactcenterService;
+    
+    @Autowired
+    EslServices eslService;
 	
     @PostMapping("/new/service")
     @PreAuthorize("hasRole('MANAGER')")
@@ -89,6 +93,10 @@ public class ServiceController {
 		service.setEnabled(true);
 		
 		Service serviceResult = contactcenterService.createContactcenter(service);	
+		
+		// Configuration personnel dans serveur freeswitch
+		System.out.println("loading............. "+ service.getDomaine());
+    	eslService.reloadService(service.getDomaine());
 		
         return ResponseEntity.accepted().body(serviceResult);
     }
