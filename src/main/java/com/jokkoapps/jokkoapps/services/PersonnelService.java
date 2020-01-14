@@ -46,7 +46,7 @@ public class PersonnelService {
     @Autowired
     EslServices eslService;
 
-    public Personnel createPersonnel(com.jokkoapps.jokkoapps.model.Service service, Personnel personnel, boolean load) throws MessagingException, IOException {
+    public Personnel createPersonnel(com.jokkoapps.jokkoapps.model.Service service, Personnel personnel) throws MessagingException, IOException {
 
 
     	personnel.setService(service);
@@ -84,12 +84,8 @@ public class PersonnelService {
     	personnel.setPassword(generatedString);
     	
     	// Configuration personnel dans serveur freeswitch
-    	if(load) {
-    		eslService.addNewCallcenter(personnel.getExtension().getExtension(), personnel.getService().getDomaine());
-    	}else {
-    		eslService.addNewAgent(personnel.getExtension().getExtension(), personnel.getService().getDomaine());
-    	}
-    	
+    	eslService.addNewAgent(personnel.getExtension().getExtension(), personnel.getService().getDomaine());
+ 
     	
     	return personnel;
     }
