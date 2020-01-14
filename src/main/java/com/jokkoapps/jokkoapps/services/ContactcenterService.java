@@ -56,7 +56,7 @@ public class ContactcenterService {
 		defaultPersonnel.setDefaultPers(true);
 		defaultPersonnel.setEmail(UUID.randomUUID().toString()+"@isdefaultpers.com");
 
-		personnelService.createPersonnel(serviceResponse, defaultPersonnel, true);
+		serviceResponse.setDefaultPersonnel(personnelService.createPersonnel(serviceResponse, defaultPersonnel, true));
 		
 		Widget widget = new Widget();
 		

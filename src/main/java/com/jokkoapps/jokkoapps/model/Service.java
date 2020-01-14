@@ -58,8 +58,8 @@ public class Service extends DateAudit {
     private Manager manager;
     
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "extension_id", referencedColumnName = "id")
-    private Personnel defaultextension;
+    @JoinColumn(name = "personnel_id", referencedColumnName = "id")
+    private Personnel defaultPersonnel;
     
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "extension_user", referencedColumnName = "id")
@@ -116,12 +116,12 @@ public class Service extends DateAudit {
 
 
 
-	public Personnel getDefaultextension() {
-		return defaultextension;
+	public Personnel getDefaultPersonnel() {
+		return defaultPersonnel;
 	}
 
-	public void setDefaultextension(Personnel defaultextension) {
-		this.defaultextension = defaultextension;
+	public void setDefaultPersonnel(Personnel defaultPersonnel) {
+		this.defaultPersonnel = defaultPersonnel;
 	}
 
 	public List<Personnel> getPersonnels() {
