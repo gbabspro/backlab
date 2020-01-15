@@ -93,6 +93,43 @@ public class EslController {
     	return ResponseEntity.accepted().body(response);
     }
 
+    
+    @GetMapping("/list/call/waiting/{domaine}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<?> listCallWaiting(@PathVariable (value = "domaine") String domaine) {
+    	
+    	List<String> response = this.sendApiMsg("callcenter_config queue list members "+domaine);
+    	
+    	int result = 0;
+
+    	
+    	int i=0;
+    	for(String line : response) {
+    		String pers[];
+    		if(i!=0 && i<response.size()-1) {
+    			pers = line.split("\\|");
+    			if(pers[pers.length-1].equalsIgnoreCase("Waiting")) {
+    				result = result + 1;
+    			}
+    		}
+    		
+    		i++;
+    	}
+    	
+    	return ResponseEntity.accepted().body(result);
+    }
+    
+    
+    @GetMapping("/test/service/{domaine}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<?> testService(@PathVariable (value = "domaine") String domaine) {
+    	
+    	List<String> response = this.sendApiMsg("callcenter_config queue list agents "+domaine);
+   
+    	return ResponseEntity.accepted().body(response);
+    }
+    
+    
 	
 	private List<String> sendApiMsg(String msg) {
 	    try {
