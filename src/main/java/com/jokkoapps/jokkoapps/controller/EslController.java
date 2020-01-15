@@ -108,7 +108,7 @@ public class EslController {
     		String pers[];
     		if(i!=0 && i<response.size()-1) {
     			pers = line.split("\\|");
-    			if(pers[pers.length-1].equalsIgnoreCase("Waiting")) {
+    			if(pers[pers.length-2].equalsIgnoreCase("Waiting")) {
     				result = result + 1;
     			}
     		}
@@ -118,6 +118,43 @@ public class EslController {
     	
     	return ResponseEntity.accepted().body(result);
     }
+    
+    @GetMapping("/list/currents/calls/{domaine}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<?> listCurrentCalls(@PathVariable (value = "domaine") String domaine) {
+    	
+    	List<String> response = this.sendApiMsg("callcenter_config queue count agents "+domaine+" 'In a queue call'");
+    	
+    	String result = response.get(0);
+
+    	return ResponseEntity.accepted().body(result);
+    }
+    
+    @GetMapping("/list/agents/out/{domaine}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<?> listAgentsOut(@PathVariable (value = "domaine") String domaine) {
+    	
+    	List<String> response = this.sendApiMsg("callcenter_config queue count agents "+domaine+" 'Logged Out'");
+    	
+    	String result = response.get(0);
+
+    	return ResponseEntity.accepted().body(result);
+    }
+    
+    @GetMapping("/list/agents/in/{domaine}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<?> listAgentsIn(@PathVariable (value = "domaine") String domaine) {
+    	
+    	List<String> response = this.sendApiMsg("callcenter_config queue count agents "+domaine+" 'Available'");
+    	
+    	String result = response.get(0);
+
+    	return ResponseEntity.accepted().body(result);
+    }
+    
+    
+    
+    
     
     
     @GetMapping("/test/service/{domaine}")
