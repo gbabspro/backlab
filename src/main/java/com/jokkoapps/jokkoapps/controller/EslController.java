@@ -1,5 +1,6 @@
 package com.jokkoapps.jokkoapps.controller;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,27 +8,39 @@ import java.util.Optional;
 
 import org.freeswitch.esl.client.inbound.Client;
 import org.freeswitch.esl.client.transport.message.EslMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jokkoapps.jokkoapps.security.CurrentUser;
+import com.jokkoapps.jokkoapps.security.UserPrincipal;
+
 
 @RestController
 @RequestMapping("/api")
 public class EslController {
 	
+	@Autowired
+    private SimpMessageSendingOperations messagingTemplate;
+	
     @GetMapping("/operator/login/{userId}")
     @PreAuthorize("hasRole('AGENT') or hasRole('MANAGER')")
-    public ResponseEntity<?> setLogin(@PathVariable (value = "userId") String userId) {
+    public ResponseEntity<?> setLogin(@PathVariable (value = "userId") String userId, @CurrentUser UserPrincipal currentUser) {
     	
     	List<String> response = this.sendApiMsg("callcenter_config agent set status "+userId+"@51.91.120.241 'Available'");
     	
     	for(String str : response) {
     	System.out.println(str);
     	}
+    	
+    	
+    	
+    	messagingTemplate.convertAndSendToUser(currentUser.getUsername(), "/queue/agent-update", response);
     	
     	return ResponseEntity.accepted().body(response);
     }
@@ -175,7 +188,7 @@ public class EslController {
 	        inboudClient.connect("srv.babacargaye.com", 8021, "ClueCon", 10);
 	        
 	         EslMessage response = inboudClient.sendSyncApiCommand(msg, "" );
-	        
+	         
 	        
 	         inboudClient.close();
 	         
