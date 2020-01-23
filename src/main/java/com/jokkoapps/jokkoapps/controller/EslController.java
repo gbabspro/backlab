@@ -10,12 +10,17 @@ import org.freeswitch.esl.client.inbound.Client;
 import org.freeswitch.esl.client.transport.message.EslMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.SimpMessageType;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.socket.messaging.SessionConnectedEvent;
 
 import com.jokkoapps.jokkoapps.security.CurrentUser;
 import com.jokkoapps.jokkoapps.security.UserPrincipal;
@@ -26,25 +31,38 @@ import com.jokkoapps.jokkoapps.security.UserPrincipal;
 public class EslController {
 	
 	@Autowired
-    private SimpMessageSendingOperations messagingTemplate;
+    private SimpMessagingTemplate messagingTemplate;
 	
-    @GetMapping("/operator/login/{userId}")
+    @GetMapping("/operator/login/{domaine}/{userId}")
     @PreAuthorize("hasRole('AGENT') or hasRole('MANAGER')")
-    public ResponseEntity<?> setLogin(@PathVariable (value = "userId") String userId, @CurrentUser UserPrincipal currentUser) {
+    public ResponseEntity<?> setLogin(@PathVariable (value = "domaine") String domaine, @PathVariable (value = "userId") String userId) {
     	
     	List<String> response = this.sendApiMsg("callcenter_config agent set status "+userId+"@51.91.120.241 'Available'");
+        
+    	HashMap<String, String> eventNotif = new HashMap<String, String>();
+    	eventNotif.put("CCAction", "agent-status-change");
+    	eventNotif.put("CCAgen", userId);
     	
-    	for(String str : response) {
-    	System.out.println(str);
-    	}
-    	
-    	
-    	
-    	messagingTemplate.convertAndSendToUser(currentUser.getUsername(), "/queue/agent-update", response);
+    	messagingTemplate.convertAndSendToUser(domaine, "/queue/update", eventNotif);
     	
     	return ResponseEntity.accepted().body(response);
     }
+   
     
+    @GetMapping("/operator/logout/{domaine}/{userId}")
+    @PreAuthorize("hasRole('AGENT') or hasRole('MANAGER')")
+    public ResponseEntity<?> setLogout(@PathVariable (value = "domaine") String domaine, @PathVariable (value = "userId") String userId) {
+    	
+    	List<String> response = this.sendApiMsg("callcenter_config agent set status "+userId+"@51.91.120.241 'Logged Out'");
+    	
+    	HashMap<String, String> eventNotif = new HashMap<String, String>();
+    	eventNotif.put("CCAction", "agent-status-change");
+    	eventNotif.put("CCAgen", userId);
+    	
+    	messagingTemplate.convertAndSendToUser(domaine, "/queue/update", eventNotif);
+    	
+    	return ResponseEntity.accepted().body(response);
+    }
     
     @GetMapping("/operator/list/{domaine}")
     @PreAuthorize("hasRole('MANAGER')")
@@ -70,7 +88,7 @@ public class EslController {
     		if(i!=0 && i<response.size()-1) {
     			pers = line.split("\\|");
     			HashMap<String, String> tempResult = new HashMap<String, String>();
-    		    tempResult.put("name", pers[0]);
+    		    tempResult.put("name", pers[0].split("@")[0]);
     			tempResult.put("status", pers[5]);
     			tempResult.put("state", pers[6]);
     		    result.add(tempResult);
@@ -92,19 +110,7 @@ public class EslController {
    
     	return ResponseEntity.accepted().body(response);
     }
-    
-    @GetMapping("/operator/logout/{userId}")
-    @PreAuthorize("hasRole('AGENT') or hasRole('MANAGER')")
-    public ResponseEntity<?> setLogout(@PathVariable (value = "userId") String userId) {
-    	
-    	List<String> response = this.sendApiMsg("callcenter_config agent set status "+userId+"@51.91.120.241 'Logged Out'");
-    	
-    	for(String str : response) {
-    	System.out.println(str);
-    	}
-    	
-    	return ResponseEntity.accepted().body(response);
-    }
+   
 
     
     @GetMapping("/list/call/waiting/{domaine}")
@@ -188,6 +194,7 @@ public class EslController {
 	        inboudClient.connect("srv.babacargaye.com", 8021, "ClueCon", 10);
 	        
 	         EslMessage response = inboudClient.sendSyncApiCommand(msg, "" );
+	       
 	         
 	        
 	         inboudClient.close();
