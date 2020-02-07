@@ -10,6 +10,12 @@ import com.jokkoapps.jokkoapps.security.UserPrincipal;
 import com.jokkoapps.jokkoapps.services.UserService;
 import com.jokkoapps.jokkoapps.security.CurrentUser;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -17,17 +23,16 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api")
@@ -51,12 +56,6 @@ public class UserController {
         UserSummary userSummary = new UserSummary(currentUser.getId(), currentUser.getFirstname(), currentUser.getLastname(), currentUser.getEmail(), currentUser.getPhone(), currentUser.getAuthorities());
 
         return userSummary;
-    }
-
-    @GetMapping("/user/checkEmailAvailability")
-    public UserIdentityAvailability checkEmailAvailability(@RequestParam(value = "email") String email) {
-        Boolean isAvailable = !userRepository.existsByEmail(email);
-        return new UserIdentityAvailability(isAvailable);
     }
     
     @PostMapping("/user/updatePassword")
@@ -86,6 +85,36 @@ public class UserController {
         return ResponseEntity.accepted().body(new ApiResponse(true, "Votre mot de passe a bien étè modifié !"));
     }
     
+    
+    @GetMapping("/user/php/gen")
+    public ResponseEntity<?> phpGen() throws Exception {
+    	
+    	URL url = new URL("http://srv.babacargaye.com/testfile/filegenerator.php?name="+RandomStringUtils.randomAlphabetic(15)+".js"+
+    			"&sipuserpass=passer"+
+    			"&sipuser=babs"+
+    			"&center=centre&theme=cfcfcf");
+    	
+    	HttpURLConnection cnx = (HttpURLConnection) url.openConnection();
+    	cnx.connect();
+    	
+    	if( cnx.getResponseCode() == HttpURLConnection.HTTP_OK ){
+    		
+    		BufferedReader input = new BufferedReader(new InputStreamReader(
+    				cnx.getInputStream()));
+    		
+    		String inputLine;
+            while ((inputLine = input.readLine()) != null) 
+                System.out.println(inputLine);
+            input.close();
+            
+    	}else{
+    	    
+    	    System.out.println("cnx ko "+cnx.getErrorStream());
+    	}
+
+        
+        return ResponseEntity.accepted().body("edede");
+    }
     
     @PostMapping("/user/updateEmail")
     @PreAuthorize("hasRole('MANAGER')")

@@ -36,7 +36,7 @@ public class EslServices {
 					
 					HashMap<String, String> agentStatus = new HashMap<String, String>();
 
-					if(event.getEventHeaders().containsKey("CC-Action") && (event.getEventHeaders().get("CC-Action").equals("member-queue-start") || event.getEventHeaders().get("CC-Action").equals("member-queue-end"))) {
+					if(event.getEventHeaders().containsKey("CC-Action") && (event.getEventHeaders().get("CC-Action").equals("bridge-agent-end") || event.getEventHeaders().get("CC-Action").equals("bridge-agent-start") || event.getEventHeaders().get("CC-Action").equals("member-queue-start") || event.getEventHeaders().get("CC-Action").equals("member-queue-end"))) {
 
 						agentStatus.put("CCQueue", event.getEventHeaders().get("CC-Queue"));
 						agentStatus.put("CCAction", event.getEventHeaders().get("CC-Action"));

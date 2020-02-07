@@ -72,13 +72,13 @@ public class RegistrationListener implements
     	
 
         String recipientAddress = manager.getEmail();
-        String subject = "Activez votre compte";
+        String subject = "Activation de votre compte chez AlloSky";
          
         MimeMessage mimeMessage = this.mailSender.createMimeMessage();
         MimeMessageHelper email = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         email.setTo(recipientAddress);
         email.setSubject(subject);
-        email.setFrom("contact@babacargaye.com");
+        email.setFrom("AlloSky <contact@babacargaye.com>");
         
         String htmlContent = this.templateEngine.process("email-simple.html", ctx);
         email.setText(htmlContent, true);

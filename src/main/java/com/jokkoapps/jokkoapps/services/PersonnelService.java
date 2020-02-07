@@ -80,8 +80,6 @@ public class PersonnelService {
     	// Remettre mot de passe clair pour envoi mail
     	personnel.setPassword(generatedString);
     	
- 
-    	
     	return personnel;
     }
 }

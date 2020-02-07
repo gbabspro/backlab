@@ -37,6 +37,8 @@ import com.jokkoapps.jokkoapps.model.User;
 import com.jokkoapps.jokkoapps.payload.ApiResponse;
 import com.jokkoapps.jokkoapps.payload.NewPersonnelRequest;
 import com.jokkoapps.jokkoapps.payload.UpdatePersonnelProfile;
+import com.jokkoapps.jokkoapps.payload.UserIdentityAvailability;
+import com.jokkoapps.jokkoapps.payload.UserSummary;
 import com.jokkoapps.jokkoapps.repository.AgentRepository;
 import com.jokkoapps.jokkoapps.repository.RoleRepository;
 import com.jokkoapps.jokkoapps.repository.ServiceRepository;
@@ -114,7 +116,10 @@ public class PersonnelController {
     	
     	
     	jokkoMailSender.sendMailNewAgent(newPersonnel);
-    			
+    	
+    	newPersonnel.setPassword(passwordEncoder.encode(newPersonnel.getPassword()));
+    	personnelRepository.save(newPersonnel);
+    	
     	return ResponseEntity.accepted().body(newPersonnel);
     }
     
@@ -229,16 +234,34 @@ public class PersonnelController {
     
     @GetMapping("/operator/me")
     @PreAuthorize("hasRole('AGENT')")
-    public ResponseEntity<?> getServiceByOperatorId(@CurrentUser UserPrincipal currentUser) {
-    	
+    public UserSummary getCurrentUser(@CurrentUser UserPrincipal currentUser) {
+
+        UserSummary userSummary = new UserSummary(currentUser.getId(), currentUser.getFirstname(), currentUser.getLastname(), currentUser.getEmail(), currentUser.getAuthorities());
+
+        return userSummary;
+    }
+    
+    @GetMapping("/operator/service")
+    @PreAuthorize("hasRole('AGENT')")
+    public ResponseEntity<?> getOperatorService(@CurrentUser UserPrincipal currentUser) {
+
     	Optional<Personnel> persOptional = personnelRepository.findById(currentUser.getId());
     	
     	if(persOptional.isPresent() != true) {
-    		return new ResponseEntity(new ApiResponse(false, "Utilisateur introuvable !"),
+    		return new ResponseEntity(new ApiResponse(false, "User unknow"),
                     HttpStatus.NOT_FOUND);
     	}
     	
-    	Personnel personnel = persOptional.get();
-    	return ResponseEntity.accepted().body(personnel);
+    	Service service = persOptional.get().getService();
+    	
+    	return ResponseEntity.accepted().body(service);
     }
+    
+    @GetMapping("/operator/checkEmailAvailability/{email}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public UserIdentityAvailability checkEmailAvailability(@PathVariable(value = "email") String email) {
+        Boolean isAvailable = !userRepository.existsByEmail(email);
+        return new UserIdentityAvailability(isAvailable);
+    }
+    
 }

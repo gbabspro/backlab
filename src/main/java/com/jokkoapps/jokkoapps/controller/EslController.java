@@ -1,5 +1,10 @@
 package com.jokkoapps.jokkoapps.controller;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -127,7 +132,32 @@ public class EslController {
     		String pers[];
     		if(i!=0 && i<response.size()-1) {
     			pers = line.split("\\|");
-    			if(pers[pers.length-2].equalsIgnoreCase("Waiting")) {
+    			if(pers[pers.length-2].equalsIgnoreCase("Waiting") || pers[pers.length-2].equalsIgnoreCase("Trying")) {
+    				result = result + 1;
+    			}
+    		}
+    		
+    		i++;
+    	}
+    	
+    	return ResponseEntity.accepted().body(result);
+    }
+    
+    @GetMapping("/list/call/progress/{domaine}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<?> listCallInProgress(@PathVariable (value = "domaine") String domaine) {
+    	
+    	List<String> response = this.sendApiMsg("callcenter_config queue list members "+domaine);
+    	
+    	int result = 0;
+
+    	
+    	int i=0;
+    	for(String line : response) {
+    		String pers[];
+    		if(i!=0 && i<response.size()-1) {
+    			pers = line.split("\\|");
+    			if(pers[pers.length-2].equalsIgnoreCase("Answered")) {
     				result = result + 1;
     			}
     		}
@@ -171,8 +201,7 @@ public class EslController {
     	return ResponseEntity.accepted().body(result);
     }
     
-    
-    
+  
     
     
     

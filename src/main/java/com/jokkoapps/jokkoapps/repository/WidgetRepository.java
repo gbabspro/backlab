@@ -7,6 +7,9 @@ import com.jokkoapps.jokkoapps.model.Widget;
 
 public interface WidgetRepository extends JpaRepository<Widget, Long>{
 	
-	Widget findByServiceId(Long serviceId);
+
+	Optional<Widget> findByServiceId(Long serviceId);
 	Optional<Widget> findById(Long id);
+	
+	boolean existsByServiceId(Long serviceId);
 }

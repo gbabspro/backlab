@@ -30,6 +30,14 @@ public class UserSummary {
         this.authorities = authorities;
     }
     
+    public UserSummary(Long id, String firstname, String lastname, String email, Collection<? extends GrantedAuthority> authorities) {
+        this.id = id;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.authorities = authorities;
+    }
+    
     public Collection<? extends GrantedAuthority> getAuthorities() {
 		return authorities;
 	}

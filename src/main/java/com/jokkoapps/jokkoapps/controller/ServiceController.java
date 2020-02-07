@@ -1,6 +1,11 @@
 package com.jokkoapps.jokkoapps.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -8,6 +13,7 @@ import java.util.UUID;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -94,8 +100,6 @@ public class ServiceController {
 		
 		Service serviceResult = contactcenterService.createContactcenter(service);	
 		
-		// Configuration personnel dans serveur freeswitch
-		System.out.println("loading............. "+ service.getDomaine());
     	eslService.reloadService(service.getDomaine());
 		
         return ResponseEntity.accepted().body(serviceResult);
@@ -109,8 +113,7 @@ public class ServiceController {
     	Optional<Service> serviceOptional = serviceRepository.findById(serviceId);
     	
     	if(serviceOptional.isPresent() != true) {
-    		return new ResponseEntity(new ApiResponse(false, "Le service est introuvable !"),
-                    HttpStatus.NOT_FOUND);
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Aucun service"));
     	}
     	
     	Service service = serviceOptional.get();
@@ -127,11 +130,10 @@ public class ServiceController {
     	Optional<Service> serviceOptional = serviceRepository.findById(serviceId);
     	
     	if(serviceOptional.isPresent() != true) {
-    		return new ResponseEntity(new ApiResponse(false, "Le service est introuvable !"),
-                    HttpStatus.NOT_FOUND);
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Aucun service"));
     	}
     	
-		Widget widget = widgetRepo.findByServiceId(serviceOptional.get().getId());
+		Widget widget = widgetRepo.findByServiceId(serviceOptional.get().getId()).get();
 		
 		return ResponseEntity.status(HttpStatus.OK)
     	        .body(widget);
@@ -146,8 +148,7 @@ public class ServiceController {
     	Optional<Service> serviceOptional = serviceRepository.findById(serviceId);
     	
     	if(serviceOptional.isPresent() != true) {
-    		return new ResponseEntity(new ApiResponse(false, "Le service est introuvable !"),
-                    HttpStatus.NOT_FOUND);
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Aucun service"));
     	}
     	
     	Service service = serviceOptional.get();
@@ -164,8 +165,7 @@ public class ServiceController {
     	List<Service> listService = serviceRepository.findByManagerId(currentUser.getId());
     	
     	if(listService.isEmpty()) {
-    		return new ResponseEntity(new ApiResponse(false, "Aucun service trouvé !"),
-                    HttpStatus.NOT_FOUND);
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Aucun service"));
     	}
     	
     	return ResponseEntity.status(HttpStatus.OK)
@@ -180,8 +180,7 @@ public class ServiceController {
     	Optional<Service> serviceOptional = serviceRepository.findById(serviceId);
     	
     	if(serviceOptional.isPresent() != true) {
-    		return new ResponseEntity(new ApiResponse(false, "Le service est introuvable !"),
-                    HttpStatus.NOT_FOUND);
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Aucun service"));
     	}
     	
     	List<Personnel> personnels = agentRepository.findByServiceId(serviceId);
@@ -198,15 +197,14 @@ public class ServiceController {
     	Optional<Service> serviceOptional = serviceRepository.findById(serviceId);
     	
     	if(serviceOptional.isPresent() != true) {
-    		return new ResponseEntity(new ApiResponse(false, "Le service est introuvable !"),
-                    HttpStatus.NOT_FOUND);
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Aucun service"));
     	}
     	
     	Service service = serviceOptional.get();
     	
     	if(!service.isEnabled()) {
-    		return new ResponseEntity(new ApiResponse(false, "Le service est déjà désactivé !"),
-                    HttpStatus.ALREADY_REPORTED);
+    		
+    		return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(new ApiResponse(false, "Le service est déjà désactivé "));
     	}
     	
     	service.setEnabled(false);
@@ -219,24 +217,46 @@ public class ServiceController {
     
     @PostMapping("/update/widget/{widgetId}")
     @PreAuthorize("hasRole('MANAGER')")
-    public ResponseEntity<?> updateWidget(@PathVariable Long widgetId, @Valid @RequestBody Widget requestWidget) {
+    public ResponseEntity<?> updateWidget(@PathVariable Long widgetId, @Valid @RequestBody Widget requestWidget) throws IOException {
     	
     	Optional<Widget> widgetOp = widgetRepo.findById(widgetId);
     	
     	if(widgetOp.isPresent() != true) {
-    		return new ResponseEntity(new ApiResponse(false, "Le service est introuvable !"),
-                    HttpStatus.NOT_FOUND);
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Aucun service"));
     	}
     	
     	Widget widget = widgetOp.get();
     	
     	widget.setBtnBackground(requestWidget.getBtnBackground());
     	widget.setTheme(requestWidget.getTheme());
+    	Service service = widget.getService();
+		
+    	URL url = new URL("http://srv.babacargaye.com/testfile/filegenerator.php?name="+widget.getUrl()+
+    			"&sipuserpass="+service.getExtensionUser().getSipPassword()+
+    			"&sipuser="+service.getExtensionUser().getExtension()+
+    			"&center="+service.getContactId()+"&theme="+widget.getTheme().split("#")[1]);
+    	
+    	HttpURLConnection cnx = (HttpURLConnection) url.openConnection();
+    	cnx.connect();
+    	
+    	if( cnx.getResponseCode() == HttpURLConnection.HTTP_OK ){
+    		
+    		BufferedReader input = new BufferedReader(new InputStreamReader(
+    				cnx.getInputStream()));
+
+            input.close();
+            
+    	}else{
+    	    
+    		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur s'est produite");
+    	}
     	
     	widgetRepo.save(widget);
     	
     	return ResponseEntity.accepted().body(new ApiResponse(true, "Le widget a bien été mis à jour !"));
     }
+    
+    
     
     @PostMapping("/service/unlock/{serviceId}")
     @PreAuthorize("hasRole('MANAGER')")
@@ -245,8 +265,7 @@ public class ServiceController {
     	Optional<Service> serviceOptional = serviceRepository.findById(serviceId);
     	
     	if(serviceOptional.isPresent() != true) {
-    		return new ResponseEntity(new ApiResponse(false, "Le service est introuvable !"),
-                    HttpStatus.NOT_FOUND);
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Aucun service"));
     	}
     	
     	Service service = serviceOptional.get();

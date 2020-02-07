@@ -30,6 +30,10 @@ public class Widget {
     @Size(max = 25)
     private String Theme;
     
+    @NotBlank
+    @Size(max = 100)
+    private String url;
+    
     @JsonIgnore
     @OneToOne(targetEntity = Service.class, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "service_id")
@@ -70,6 +74,14 @@ public class Widget {
 
 	public void setService(Service service) {
 		this.service = service;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
     
     

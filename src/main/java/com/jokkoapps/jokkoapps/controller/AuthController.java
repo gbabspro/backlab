@@ -19,6 +19,7 @@ import com.jokkoapps.jokkoapps.payload.LoginRequest;
 import com.jokkoapps.jokkoapps.payload.OnRegistrationCompleteEvent;
 import com.jokkoapps.jokkoapps.payload.ResetPasswordRequest;
 import com.jokkoapps.jokkoapps.payload.SignUpRequest;
+import com.jokkoapps.jokkoapps.payload.UserIdentityAvailability;
 import com.jokkoapps.jokkoapps.repository.AgentRepository;
 import com.jokkoapps.jokkoapps.repository.ManagerRepository;
 import com.jokkoapps.jokkoapps.repository.PasswordResetTokenRepository;
@@ -46,6 +47,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -255,21 +257,21 @@ public class AuthController {
     @PostMapping("/resetPassword")
     public ResponseEntity<?>  resetPassword(@Valid @RequestBody ResetPasswordRequest passwordRequest) throws MessagingException, IOException {
     	
-    	Optional<Manager> isManager = managerRepository.findByEmail(passwordRequest.getEmail());
+    	Optional<User> isUser = userRepository.findByEmail(passwordRequest.getEmail());
 		
-		if (isManager.isPresent() != true) {
-            return new ResponseEntity(new ApiResponse(false, "l'e-mail ne correspond à aucun compte !"),
+		if (isUser.isPresent() != true) {
+            return new ResponseEntity(new ApiResponse(false, "Email not found"),
                     HttpStatus.BAD_REQUEST);
 		}
 		
-		Manager manager = isManager.get();
+		User user = isUser.get();
 		
 		String token = UUID.randomUUID().toString();
-		userService.createPasswordResetTokenForUser(manager, token);
+		userService.createPasswordResetTokenForUser(user, token);
 		
-		jokkoMailSender.sendMailResetPassword(manager, token);
+		jokkoMailSender.sendMailResetPassword(user, token);
 		
-		return ResponseEntity.accepted().body(new ApiResponse(true, "Un e-mail de réinitialisation a été envoyé sur votre adresse e-mail : "+manager.getEmail()));
+		return ResponseEntity.accepted().body(new ApiResponse(true, "Un e-mail de réinitialisation a été envoyé sur votre adresse e-mail : "+user.getEmail()));
 		
 	}
     
@@ -292,6 +294,12 @@ public class AuthController {
         
 		return ResponseEntity.accepted().body(new ApiResponse(true, "Votre mot de passe a ben étè modifié !"));
 
+    }
+    
+    @GetMapping("/checkEmailAvailability/{email}")
+    public UserIdentityAvailability checkEmailAvailability(@PathVariable(value = "email") String email) {
+        Boolean isAvailable = !userRepository.existsByEmail(email);
+        return new UserIdentityAvailability(isAvailable);
     }
     
 }

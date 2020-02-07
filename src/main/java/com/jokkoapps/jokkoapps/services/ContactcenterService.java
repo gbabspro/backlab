@@ -1,11 +1,19 @@
 package com.jokkoapps.jokkoapps.services;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,12 +67,46 @@ public class ContactcenterService {
 
 		serviceResponse.setDefaultPersonnel(personnelService.createPersonnel(serviceResponse, defaultPersonnel));
 		
+		String nameUrl = RandomStringUtils.randomAlphabetic(15)+".js";
+		
+		URL url = new URL("http://srv.babacargaye.com/testfile/filegenerator.php?name="+nameUrl+
+    			"&sipuserpass="+service.getExtensionUser().getSipPassword()+
+    			"&sipuser="+service.getExtensionUser().getExtension()+
+    			"&center="+service.getContactId()+"&theme=004D40");
+    	
+    	HttpURLConnection cnx = (HttpURLConnection) url.openConnection();
+    	cnx.connect();
+    	
+    	if( cnx.getResponseCode() == HttpURLConnection.HTTP_OK ){
+    		
+    		BufferedReader input = new BufferedReader(new InputStreamReader(
+    				cnx.getInputStream()));
+
+    		
+        	Optional<Widget> OptionalWidget = widgetRepo.findByServiceId(service.getId());
+        	if(OptionalWidget.isPresent()){
+        		
+        		Widget widget = OptionalWidget.get();
+        		widget.setUrl(nameUrl); 
+        		widgetRepo.save(widget);
+        	}
+        	
+            input.close();
+            
+    	}else{
+    	    
+    		return null;
+    	}
+
+		
 		Widget widget = new Widget();
 		
 		widget.setService(serviceResponse);
 		widget.setBtnBackground("#00695C");
 		widget.setTheme("#004D40");
+		widget.setUrl(nameUrl);
 		widgetRepo.save(widget);
+		
 		
 		return serviceResponse;
     }
