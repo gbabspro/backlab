@@ -191,7 +191,6 @@ public class AuthController {
                 .buildAndExpand(result.getEmail()).toUri();
 
 		// Configuration personnel dans serveur freeswitch
-		System.out.println("loading............. "+ service.getDomaine());
     	eslService.reloadService(service.getDomaine());
     	
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));

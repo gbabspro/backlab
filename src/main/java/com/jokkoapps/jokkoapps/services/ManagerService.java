@@ -32,6 +32,7 @@ public class ManagerService {
     }
      
     public void createVerificationToken(Manager manager, String token) {
+    	System.out.println("Call create token service");
         VerificationToken myToken = new VerificationToken(token, manager);
         tokenRepository.save(myToken);
     }

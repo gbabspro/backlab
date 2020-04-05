@@ -78,7 +78,7 @@ public class RegistrationListener implements
         MimeMessageHelper email = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         email.setTo(recipientAddress);
         email.setSubject(subject);
-        email.setFrom("AlloSky <contact@babacargaye.com>");
+        email.setFrom("AlloSky <hello@allosky.net>");
         
         String htmlContent = this.templateEngine.process("email-simple.html", ctx);
         email.setText(htmlContent, true);

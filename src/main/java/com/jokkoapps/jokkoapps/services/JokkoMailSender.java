@@ -42,7 +42,7 @@ public class JokkoMailSender {
         MimeMessageHelper email = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         email.setTo(recipientAddress);
         email.setSubject(subject);
-        email.setFrom("AlloSky <contact@babacargaye.com>");
+        email.setFrom("AlloSky <hello@allosky.net>");
         
         String htmlContent = this.templateEngine.process("email-reset-password.html", ctx);
         email.setText(htmlContent, true);
@@ -69,7 +69,7 @@ public class JokkoMailSender {
         MimeMessageHelper email = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         email.setTo(emailTo);
         email.setSubject(subject);
-        email.setFrom("AlloSky <contact@babacargaye.com>");
+        email.setFrom("AlloSky <hello@allosky.net>");
         
         String htmlContent = this.templateEngine.process("email-newagent.html", ctx);
         email.setText(htmlContent, true);
