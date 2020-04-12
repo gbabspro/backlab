@@ -14,6 +14,7 @@ import java.util.Optional;
 import org.freeswitch.esl.client.inbound.Client;
 import org.freeswitch.esl.client.transport.message.EslMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 
+import com.jokkoapps.jokkoapps.payload.ApiResponse;
 import com.jokkoapps.jokkoapps.security.CurrentUser;
 import com.jokkoapps.jokkoapps.security.UserPrincipal;
 
@@ -50,7 +52,11 @@ public class EslController {
     	
     	messagingTemplate.convertAndSendToUser(domaine, "/queue/update", eventNotif);
     	
-    	return ResponseEntity.accepted().body(response);
+    	if(!response.get(0).equals("+OK")) {
+    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, "Internal Server Error"));
+    	}
+    	
+    	return ResponseEntity.accepted().body(new ApiResponse(true, "Login ok"));
     }
    
     
@@ -66,7 +72,11 @@ public class EslController {
     	
     	messagingTemplate.convertAndSendToUser(domaine, "/queue/update", eventNotif);
     	
-    	return ResponseEntity.accepted().body(response);
+    	if(!response.get(0).equals("+OK")) {
+    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, "Internal Server Error"));
+    	}
+    	
+    	return ResponseEntity.accepted().body(new ApiResponse(true, "Logout ok"));
     }
     
     @GetMapping("/operator/list/{domaine}")
@@ -112,6 +122,15 @@ public class EslController {
     public ResponseEntity<?> loadService(@PathVariable (value = "domaine") String domaine) {
     	
     	List<String> response = this.sendApiMsg("callcenter_config queue load "+domaine);
+   
+    	return ResponseEntity.accepted().body(response);
+    }
+    
+    @GetMapping("/operator/get/statut/{domaine}/{userId}")
+    @PreAuthorize("hasRole('AGENT') or hasRole('MANAGER')")
+    public ResponseEntity<?> getStatusAgent(@PathVariable (value = "domaine") String domaine, @PathVariable (value = "userId") String userId) {
+    	
+    	List<String> response = this.sendApiMsg("callcenter_config agent get status "+userId+"@51.91.120.241");
    
     	return ResponseEntity.accepted().body(response);
     }
@@ -220,7 +239,7 @@ public class EslController {
 	    try {
 
 	        final Client inboudClient = new Client();
-	        inboudClient.connect("srv.babacargaye.com", 8021, "ClueCon", 10);
+	        inboudClient.connect("127.0.0.1", 8021, "ClueCon", 10);
 	        
 	         EslMessage response = inboudClient.sendSyncApiCommand(msg, "" );
 	       

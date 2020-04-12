@@ -24,7 +24,7 @@ public class EslServices {
 	    try {
 
 	        final Client inboudClient = new Client();
-	        inboudClient.connect("srv.babacargaye.com", 8021, "ClueCon", 10);
+	        inboudClient.connect("127.0.0.1", 8021, "ClueCon", 10);
 	        
 	        		
 	        inboudClient.addEventListener(new IEslEventListener() {
@@ -88,7 +88,7 @@ public class EslServices {
 	    try {
 
 	        final Client inboudClient = new Client();
-	        inboudClient.connect("srv.babacargaye.com", 8021, "ClueCon", 10);
+	        inboudClient.connect("127.0.0.1", 8021, "ClueCon", 10);
 	        
 	        EslMessage response = inboudClient.sendSyncApiCommand(msg, "" );
 	        

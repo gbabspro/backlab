@@ -36,6 +36,7 @@ import com.jokkoapps.jokkoapps.model.Service;
 import com.jokkoapps.jokkoapps.model.User;
 import com.jokkoapps.jokkoapps.payload.ApiResponse;
 import com.jokkoapps.jokkoapps.payload.NewPersonnelRequest;
+import com.jokkoapps.jokkoapps.payload.OperatorSummary;
 import com.jokkoapps.jokkoapps.payload.UpdatePersonnelProfile;
 import com.jokkoapps.jokkoapps.payload.UserIdentityAvailability;
 import com.jokkoapps.jokkoapps.payload.UserSummary;
@@ -220,8 +221,7 @@ public class PersonnelController {
     	Optional<Personnel> persOptional = personnelRepository.findById(persId);
     	
     	if(persOptional.isPresent() != true) {
-    		return new ResponseEntity(new ApiResponse(false, "Utilisateur introuvable !"),
-                    HttpStatus.NOT_FOUND);
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "User not found"));
     	}
     	
     	Personnel personnel = persOptional.get();
@@ -229,16 +229,25 @@ public class PersonnelController {
     	personnelRepository.delete(personnel);
     	
     	return ResponseEntity.accepted().body(new ApiResponse(true, "Compte utilisateur supprimé !"));
+    	
     }
     
     
     @GetMapping("/operator/me")
     @PreAuthorize("hasRole('AGENT')")
-    public UserSummary getCurrentUser(@CurrentUser UserPrincipal currentUser) {
+    public ResponseEntity<?> getCurrentUser(@CurrentUser UserPrincipal currentUser) {
 
-        UserSummary userSummary = new UserSummary(currentUser.getId(), currentUser.getFirstname(), currentUser.getLastname(), currentUser.getEmail(), currentUser.getAuthorities());
-
-        return userSummary;
+    	Optional<Personnel> persOptional = personnelRepository.findById(currentUser.getId());
+    	
+    	if(persOptional.isPresent() != true) {
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "User not found"));
+    	}
+    	
+    	Personnel personnel = persOptional.get();
+    	
+        OperatorSummary operatorSummary = new OperatorSummary(personnel.getId(), personnel.getFirstname(), personnel.getLastname(), personnel.getEmail(), personnel.getExtension().getExtension(), personnel.getExtension().getSipPassword(), currentUser.getAuthorities());
+    	
+    	return ResponseEntity.status(HttpStatus.OK).body(operatorSummary);
     }
     
     @GetMapping("/operator/service")
