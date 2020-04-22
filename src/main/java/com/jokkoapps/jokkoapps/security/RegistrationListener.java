@@ -64,7 +64,7 @@ public class RegistrationListener implements
         managerService.createVerificationToken(manager, token);
         
         
-        String confirmationUrl = "http://localhost:3000/pages/confirm-registration/" + token;
+        String confirmationUrl = "https://allosky.net/pages/confirm-registration/" + token;
         String name = manager.getFirstname()+" "+manager.getLastname();
     	
         ctx.setVariable("name", name);

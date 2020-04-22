@@ -28,7 +28,7 @@ public class JokkoMailSender {
     	Context ctx = new Context();
         
         
-        String resetUrl = "http://localhost:3000/pages/changer-password/" + token;
+        String resetUrl = "https://allosky.net/pages/changer-password/" + token;
         String name = user.getFirstname()+" "+user.getLastname();
     	
         ctx.setVariable("name", name);
